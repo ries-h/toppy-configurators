@@ -218,6 +218,11 @@
 }
 @media (max-width:600px){#toppy-sc.thc-app .thc-stage .thc-usp{display:none}}
 @media (prefers-reduced-motion:reduce){#toppy-sc .thc-row,#toppy-sc .thc-card{transition:none}}
+/* losse link (geen iframe): venster midden boven over een gedimde pagina, zoals de pop-up */
+html.thc-los,html.thc-los body{background:rgba(30,36,38,.6);min-height:100%}
+html.thc-los body{padding:24px;box-sizing:border-box}
+html.thc-los #toppy-sc.thc-app{width:min(1080px,100%);height:min(860px,calc(100vh - 48px));height:min(860px,calc(100dvh - 48px));margin:0 auto;background:#fff;border-radius:.625rem;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@media (max-width:600px){html.thc-los body{padding:0}html.thc-los #toppy-sc.thc-app{height:100vh;height:100dvh;border-radius:0}}
 </style>
 <script>
 (function () {
@@ -305,6 +310,9 @@ var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, b
 var root=document.getElementById('toppy-sc');
 var APP=root.hasAttribute('data-pagina'), IFRAME=window.parent!==window;
 if(APP) root.className='thc-app';
+if(APP&&!IFRAME) document.documentElement.classList.add('thc-los');
+// sluiten: in de pop-up meldt de pagina het aan de modal, als losse pagina terug naar waar je vandaan kwam (of de categorie)
+function sluit(){ if(IFRAME) return meld('sluiten'); if(document.referrer&&history.length>1) history.back(); else location.href='https://www.toppy.nl/category/1964/zwembad/afdekzeil-zwembad/stavenafdekking-zwembad.html'; }
 function meld(type,extra){ if(!IFRAME) return; var d={bron:'toppy-staven-configurator',type:type}; for(var k in extra||{}) d[k]=extra[k]; try{ window.parent.postMessage(d,'*'); }catch(x){} }
 
 function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -443,7 +451,7 @@ function render(){
       '<ol class="thc-next"><li><span>Een zwembadspecialist van Toppy bekijkt je samenstelling.</span></li>'+
       '<li><span>Je krijgt een persoonlijk voorstel op maat'+(S.email?' op <b>'+e(S.email)+'</b>':'')+'.</span></li></ol>'+
       '<h3 class="thc-kop">Jouw samenstelling</h3>'+overzicht(false)+
-      (APP&&IFRAME?'<button type="button" class="thc-btn thc-go" data-a="sluiten">Sluiten</button>':'')+'</div>';
+      (APP?'<button type="button" class="thc-btn thc-go" data-a="sluiten">Sluiten</button>':'')+'</div>';
     root.querySelector('.thc-done').focus({preventScroll:true});
     if(!APP&&root.getBoundingClientRect().top<0) root.scrollIntoView({block:'start'});
     return; }
@@ -452,7 +460,7 @@ function render(){
   var st=STAPPEN[stap], h='', p=indicatie();
   if(!INSTELLINGEN.verzenden) h+='<div class="thc-test"><b>Testmodus:</b> aanvragen worden nog niet verstuurd.</div>';
   if(!APP) h+='<header class="thc-bar"><h1>Stavenafdekking <span>· '+e(S.uitvoering)+'</span></h1><div class="thc-vanaf">'+(p===null?'vanaf<b>'+eur(prijsPm(),true)+' p/m²</b>':'indicatie<b>'+eur(Math.round(p))+'</b>')+'</div></header>';
-  h+='<nav class="thc-steps" aria-label="Stappen">'+STAPPEN.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP&&IFRAME?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
+  h+='<nav class="thc-steps" aria-label="Stappen">'+STAPPEN.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
   h+='<div class="thc-main">'+podium()+'<section class="thc-panel"><h2>'+st.titel+'</h2><p class="thc-lead">'+st.lead+'</p>';
   if(stap===0) h+='<div class="thc-cards">'+UITVOERINGEN.map(kaart).join('')+'</div>';
   if(stap===1){ h+='<fieldset class="thc-q"><legend>Vorm</legend><div class="thc-list">'+VORMEN.map(function(x){return rij(x.v,'vorm',{sub:x.geenPrijs?txt(x.v):''});}).join('')+'</div></fieldset>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'')+maatVelden(); }
@@ -518,7 +526,7 @@ root.addEventListener('click',function(ev){
     S[k]=val; laatst=val; if(k==='vorm'){ fout={}; } render(); return; }
   var g=ev.target.closest('[data-ga]'); if(g&&!g.disabled) return ga(+g.getAttribute('data-ga'));
   var a=ev.target.closest('[data-a]'); if(!a) return;
-  if(a.getAttribute('data-a')==='sluiten') return meld('sluiten');
+  if(a.getAttribute('data-a')==='sluiten') return sluit();
   if(a.getAttribute('data-a')==='terug') return ga(stap-1);
   lees();
   if(stap===1&&!maatOk()&&!vorm().geenPrijs){ fout={maat:'Vul alle maten in hele centimeters in, dan rekenen we de oppervlakte uit.'}; return render(); }
@@ -531,7 +539,8 @@ root.addEventListener('click',function(ev){
 });
 // maten: live oppervlakte en prijs bijwerken tijdens het typen
 root.addEventListener('input',function(ev){ if(ev.target.getAttribute('data-maat')){ lees(); render(); } });
-if(APP&&IFRAME) document.addEventListener('keydown',function(ev){ if(ev.key==='Escape') meld('sluiten'); });
+if(APP) document.addEventListener('keydown',function(ev){ if(ev.key==='Escape') sluit(); });
+if(APP&&!IFRAME) document.addEventListener('click',function(ev){ if(ev.target===document.body||ev.target===document.documentElement) sluit(); });
 render(); meld('geladen');
 })();
 </script>
