@@ -6,8 +6,6 @@ Losse configuratorpagina's voor toppy.nl, gehost via GitHub Pages.
   kleur, oprollen, gegevens). Rekent een prijsindicatie zoals de configurator op
   toppy.nl en stuurt de aanvraag naar JotForm "Offerte aanvragen stavenafdekking".
 
-- `demo.html`: demo van de pop-up (knop opent de configurator over de pagina).
-
 Op toppy.nl: plak het blok `configurator-modal.html` (in de kennisbank) op de pagina; elke
 knop met `data-open-offerte` of `data-open-configurator` opent dan de pop-up. Losse iframe kan ook:
 
