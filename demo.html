@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Demo pop-up configurator · Toppy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap">
+<style>
+  body{margin:0;font-family:Poppins,Helvetica,Arial,sans-serif;color:#343e40;background:#f9f4f0}
+  main{max-width:720px;margin:0 auto;padding:64px 16px}
+  h1{font-size:32px;line-height:1.2;margin:0 0 12px}
+  h1 mark{background:#ffcb01;color:inherit;padding:.03em .12em}
+  p{margin:0 0 24px;color:#5f6768}
+  .knop{display:inline-block;background:#ffcb01;color:#343e40;font-weight:700;border:0;border-radius:.375rem;padding:14px 24px;font-size:16px;cursor:pointer;text-decoration:none}
+  .knop:focus-visible{outline:3px solid #35acf8;outline-offset:2px}
+</style>
+</head><body>
+<main>
+  <h1>Demo: configurator als <mark>pop-up</mark></h1>
+  <p>Zo werkt het straks op de categoriepagina stavenafdekking. Klik op de knop; sluiten kan met het kruisje rechtsboven, met Esc of door naast het venster te klikken.</p>
+  <a class="knop" href="stavenafdekking.html" data-open-offerte>Vrijblijvende offerte aanvragen</a>
+</main>
+<!--
+    Pop-up configurator stavenafdekking (categorie /category/1964), custom HTML.
+    Versie 2026-10-21. Plak dit blok één keer op de pagina (onderaan mag).
+    Elke knop of link met data-open-offerte of data-open-configurator opent de configurator
+    in een venster over de pagina. De knoppen in hero.html en faq.html hebben dat kenmerk al;
+    zet het ook op "Offerte aanvragen" in het blok "Offerte of direct bestellen?".
+    Sluiten: het kruisje rechtsboven in de configurator, Esc, of naast het venster klikken.
+    De configurator zelf staat op GitHub Pages (repo ries-h/toppy-configurators).
+-->
+<style>
+    .s-customHtmlBlock:has(> .t-flush),
+    .section-xs:has(> .t-flush), .section-s:has(> .t-flush),
+    .section-m:has(> .t-flush),  .section-l:has(> .t-flush),
+    .section-xl:has(> .t-flush) { margin-top: 0; margin-bottom: 0; }
+
+    .tp-stavenpop { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; }
+    .tp-stavenpop.is-open { display: flex; }
+    .tp-stavenpop .tp-stavenpop__achter { position: absolute; inset: 0; background: rgba(30, 36, 38, .6); }
+    .tp-stavenpop .tp-stavenpop__venster { position: relative; width: min(1080px, 100%); height: min(860px, 100%); background: #fff; border-radius: .625rem; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
+    .tp-stavenpop .tp-stavenpop__venster iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .tp-stavenpop .tp-stavenpop__laadt { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #5f6768; font: 15px/1.5 Poppins, Helvetica, Arial, sans-serif; }
+    /* reserve-kruisje, alleen zolang de configurator laadt */
+    .tp-stavenpop .tp-stavenpop__x { position: absolute; top: 10px; right: 10px; z-index: 2; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #f5f5f5; color: #343e40; font-size: 22px; line-height: 1; cursor: pointer; }
+    .tp-stavenpop.is-geladen .tp-stavenpop__x { display: none; }
+    .tp-stavenpop .tp-stavenpop__x:focus-visible { outline: 3px solid #35acf8; outline-offset: 2px; }
+    html.tp-stavenpop-open { overflow: hidden; }
+    @media (max-width: 600px) {
+        .tp-stavenpop { padding: 0; }
+        .tp-stavenpop .tp-stavenpop__venster { width: 100%; height: 100%; border-radius: 0; }
+    }
+</style>
+
+<div class="t-flush tp-stavenpop" data-staven-pop role="dialog" aria-modal="true" aria-label="Stel je stavenafdekking samen">
+    <div class="tp-stavenpop__achter" data-staven-sluit></div>
+    <div class="tp-stavenpop__venster">
+        <button type="button" class="tp-stavenpop__x" data-staven-sluit aria-label="Sluiten">×</button>
+    </div>
+</div>
+
+<script>(function () {
+    var d = document, root = d.documentElement;
+    if (root.hasAttribute('data-staven-pop-init')) return; /* dubbel geplakt? tweede keer doet niets */
+    root.setAttribute('data-staven-pop-init', '');
+
+    var URL_CONFIGURATOR = 'https://ries-h.github.io/toppy-configurators/stavenafdekking.html';
+    var BRON = 'toppy-staven-configurator';
+
+    var pop = d.querySelector('div[data-staven-pop]');
+    if (!pop) return;
+    var venster = pop.querySelector('.tp-stavenpop__venster'), terug = null;
+
+    function open() {
+        if (!venster.querySelector('iframe')) {
+            venster.insertAdjacentHTML('beforeend', '<p class="tp-stavenpop__laadt">Configurator laden…</p>');
+            var f = d.createElement('iframe');
+            f.src = URL_CONFIGURATOR;
+            f.title = 'Stel je stavenafdekking samen';
+            f.setAttribute('allow', 'clipboard-write');
+            f.onload = function () { var l = venster.querySelector('.tp-stavenpop__laadt'); if (l) l.parentNode.removeChild(l); };
+            venster.appendChild(f);
+        }
+        terug = d.activeElement;
+        pop.classList.add('is-open');
+        root.classList.add('tp-stavenpop-open');
+        var x = pop.querySelector('.tp-stavenpop__x'); if (x) x.focus();
+        if (window.dataLayer) window.dataLayer.push({ event: 'staven_configurator_open' });
+    }
+    function sluit() {
+        pop.classList.remove('is-open');
+        root.classList.remove('tp-stavenpop-open');
+        if (terug && terug.focus) terug.focus();
+    }
+
+    d.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-open-offerte],[data-open-configurator]');
+        if (t) { e.preventDefault(); open(); return; }
+        if (e.target.closest('[data-staven-sluit]')) { e.preventDefault(); sluit(); }
+    });
+    d.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && pop.classList.contains('is-open')) sluit();
+    });
+    /* berichten uit de configurator: kruisje, geladen, verzonden */
+    window.addEventListener('message', function (e) {
+        var m = e.data;
+        if (!m || m.bron !== BRON || e.origin !== 'https://ries-h.github.io') return;
+        if (m.type === 'geladen') pop.classList.add('is-geladen');
+        if (m.type === 'sluiten') sluit();
+        if (m.type === 'verzonden' && window.dataLayer) window.dataLayer.push({ event: 'staven_configurator_aanvraag', uitvoering: m.uitvoering });
+    });
+})();
+</script>
+</body></html>
