@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.toppy.nl/frontend/typpo/typpo-heavy.css">
-<style>html,body{margin:0;background:#fff;font-family:Poppins,Helvetica,Arial,system-ui,sans-serif;-webkit-text-size-adjust:100%}</style>
+<style>body{padding:24px 16px}html,body{margin:0;background:#fff;font-family:Poppins,Helvetica,Arial,system-ui,sans-serif;-webkit-text-size-adjust:100%}</style>
 </head><body>
 <!-- ============================================================
      Toppy configurator stavenafdekking: plakbaar HTML-blok
@@ -21,11 +21,11 @@
        minimaal 20 m², × prijs per m², + € 150 productie- en verzendkosten.
      Handmatig aanpassen kan alleen in het blok "INSTELLINGEN".
      ============================================================ -->
-<div id="toppy-sc" data-pagina></div>
+<div id="toppy-sc"></div>
 <style>
 #toppy-sc{--ink:#343e40;--ink2:#5f6768;--mute:#8b9091;--line:#e3e3e3;--soft:#f5f5f5;--y:#ffcb01;--y2:#fdd941;--g:#12ac74;--blue:#35acf8;--red:#f3575e;
   --head:Typpo,Poppins,Helvetica,Arial,system-ui,sans-serif;--r:.375rem;--r2:.625rem;--sh:0 7px 16px 0 rgba(0,0,0,.15);
-  color:var(--ink);font-family:inherit;line-height:1.5;max-width:1240px;margin:0 auto;position:relative}
+  color:var(--ink);font-family:inherit;line-height:1.5;max-width:1080px;margin:0 auto;position:relative}
 #toppy-sc *{box-sizing:border-box}
 #toppy-sc button,#toppy-sc input,#toppy-sc textarea{font-family:inherit;color:inherit}
 #toppy-sc .thc-test{background:#fff8d6;border:1px solid var(--y);border-radius:var(--r);padding:8px 12px;font-size:13px;margin-bottom:10px}
@@ -59,7 +59,8 @@
 #toppy-sc .thc-fg{object-fit:contain}
 #toppy-sc .thc-bg{object-fit:cover;filter:blur(22px) saturate(1.1);transform:scale(1.2);opacity:.85}
 #toppy-sc .thc-pic.thc-tek{background:#fff}
-#toppy-sc .thc-pic.thc-tek .thc-fg{padding:4%}
+#toppy-sc .thc-pic.thc-tek svg{position:absolute;inset:6%;width:88%;height:88%;display:block}
+#toppy-sc .thc-thumb svg{width:100%;height:100%;display:block}
 #toppy-sc .thc-vraag{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--soft);text-align:center;padding:16px}
 #toppy-sc .thc-vraag span{display:flex;align-items:center;justify-content:center;width:min(34%,170px);aspect-ratio:1;border-radius:50%;background:#fff;border:2px solid var(--line);font-size:clamp(48px,9vw,96px);font-weight:700;line-height:1}
 #toppy-sc .thc-vraag p{margin:0;font-size:15px;font-weight:600;color:var(--ink2)}
@@ -229,31 +230,25 @@ var INSTELLINGEN = {
   prijzen: { "Standaard": 49.95, "Tube": 64.00, "Extra Top": 74.95 },
   vast: 150,            // "Productie- en verzendkosten" per bestelling
   oprollers: { "Met de zwengel": 0, "Scoot": 995, "Rolltrot": 1089 },
-  // Foto per keuze (cdn.toppy.nl, zelfde beelden als de configurator).
-  // Uitvoeringen: DAM-foto's (Ries, 2026-10-21). Standaard = volle buizen bovenop, Tube = alleen
-  // buiseinden zichtbaar, Extra Top = geen buizen te zien. (Op toppy.nl staan de productfoto's
-  // van Standaard en Tube omgewisseld.) Let op: deze DAM-assets zijn nu maar 300 px breed.
+  // Foto per keuze. Vormen zijn eigen tekeningen (scherp, met A/B/C); de bronbeelden op toppy.nl
+  // zijn maar 100 px. Uitvoeringen: de grootste productfoto's van toppy.nl, goed toegewezen
+  // (op toppy.nl staan de foto's van Standaard en Tube omgewisseld). De DAM-foto's van Ries
+  // (Standaard f3aa1753, Tube 04288182, Extra Top adea42ea) zijn nu maar 300 px; zodra ze groot
+  // in de DAM staan, kunnen ze hier terug: https://dam.oftomorrow.eu/api/images/large/<id>
   afbeeldingen: {
-    "Standaard": "https://dam.oftomorrow.eu/api/images/large/f3aa1753-96ea-4d01-a05d-1ce6c74a2524",
-    "Tube": "https://dam.oftomorrow.eu/api/images/large/04288182-5740-4991-9676-2d34a9b317af",
-    "Extra Top": "https://dam.oftomorrow.eu/api/images/large/adea42ea-6e3e-4fa7-b507-18c9f6ebbc5e",
-    "Rechthoek": "https://cdn.toppy.nl/g/catalog/product/13620/360f360/rectangle_copy.jpg",
-    "Rechthoek met Romeinse trap": "https://cdn.toppy.nl/g/catalog/product/13623/360f360/rectangle-roman-short.jpg",
-    "Rechthoek met uitwendige trap": "https://cdn.toppy.nl/g/catalog/product/13624/360f360/rectangle-stairs-short.jpg",
-    "Rond": "https://cdn.toppy.nl/g/catalog/product/13619/360f360/round.jpg",
-    "Ovaal": "https://cdn.toppy.nl/g/catalog/product/13622/360f360/oval.jpg",
-    "Achthoekig": "https://cdn.toppy.nl/g/catalog/product/13618/360f360/octa.jpg",
-    "Achthoekig lang": "https://cdn.toppy.nl/g/catalog/product/13621/360f360/octa_long.jpg",
-    "Beige": "https://cdn.toppy.nl/g/catalog/product/7918/360f360/beige.png",
-    "Vanille": "https://cdn.toppy.nl/g/catalog/product/10142/360f360/vanille.png",
-    "Lichtgrijs": "https://cdn.toppy.nl/g/catalog/product/7921/360f360/lichtgrijs.png",
-    "Donkergrijs": "https://cdn.toppy.nl/g/catalog/product/7957/360f360/donkergrijs.png",
-    "Lichtblauw": "https://cdn.toppy.nl/g/catalog/product/7920/360f360/lichtblauw.png",
-    "Groen": "https://cdn.toppy.nl/g/catalog/product/7919/360f360/groen.png",
-    "Met de zwengel": "https://cdn.toppy.nl/g/catalog/product/7969/360f360/handmatige_oproller_2.jpg",
-    "Scoot": "https://cdn.toppy.nl/g/catalog/product/24313/360f360/scoot.png",
-    "Rolltrot": "https://cdn.toppy.nl/g/catalog/product/7970/360f360/rolltrot.jpg",
-    "Sample kit": "https://cdn.toppy.nl/catalog/product/19168/360f360/stavenafdekking.png"
+    "Standaard": "https://cdn.toppy.nl/catalog/product/24315/tube.jpg",
+    "Tube": "https://cdn.toppy.nl/catalog/product/24314/standard.jpg",
+    "Extra Top": "https://cdn.toppy.nl/catalog/product/24316/extra_top.jpg",
+    "Beige": "https://cdn.toppy.nl/catalog/product/7918/beige.png",
+    "Vanille": "https://cdn.toppy.nl/catalog/product/10142/vanille.png",
+    "Lichtgrijs": "https://cdn.toppy.nl/catalog/product/7921/lichtgrijs.png",
+    "Donkergrijs": "https://cdn.toppy.nl/catalog/product/7957/donkergrijs.png",
+    "Lichtblauw": "https://cdn.toppy.nl/catalog/product/7920/lichtblauw.png",
+    "Groen": "https://cdn.toppy.nl/catalog/product/7919/groen.png",
+    "Met de zwengel": "https://cdn.toppy.nl/catalog/product/7969/handmatige_oproller_2.jpg",
+    "Scoot": "https://cdn.toppy.nl/catalog/product/24313/scoot.png",
+    "Rolltrot": "https://cdn.toppy.nl/catalog/product/7970/rolltrot.jpg",
+    "Sample kit": "https://cdn.toppy.nl/catalog/product/19168/stavenafdekking.png"
   },
   // Korte uitleg per keuze (feiten van toppy.nl).
   teksten: {
@@ -338,10 +333,40 @@ function indicatie(){
 }
 function vanaf(){ return Math.min.apply(null,UITVOERINGEN.map(function(u){return INSTELLINGEN.prijzen[u];})); }
 
+
+/* ---------- vormtekeningen (bovenaanzicht, met maatlijnen A/B/C) ---------- */
+var SVGN=0;
+function vormSvg(v, maten){
+  var sh={
+    'Rechthoek':{d:'M85 60H335V210H85Z',x:[85,335],m:[['A',85,335,240,'h'],['B',60,210,365,'v']]},
+    'Rechthoek met Romeinse trap':{d:'M120 60H350V210H120V175A40 40 0 0 1 120 95Z',x:[80,350],m:[['A',60,210,380,'v'],['B',120,350,240,'h'],['C',80,120,40,'h']]},
+    'Rechthoek met uitwendige trap':{d:'M120 60H350V210H120V170H80V100H120Z',x:[80,350],m:[['A',60,210,380,'v'],['B',120,350,240,'h'],['C',80,120,40,'h']]},
+    'Rond':{d:'M115 135A95 95 0 1 1 305 135A95 95 0 1 1 115 135Z',x:[115,305],m:[['A',115,305,255,'h']]},
+    'Ovaal':{d:'M145 70H275A65 65 0 0 1 275 200H145A65 65 0 0 1 145 70Z',x:[80,340],m:[['A',80,340,240,'h'],['B',70,200,370,'v']]},
+    'Achthoekig':{d:'M171 40H249L305 96V174L249 230H171L115 174V96Z',x:[115,305],m:[['A',115,305,255,'h']]},
+    'Achthoekig lang':{d:'M120 65H300L340 105V165L300 205H120L80 165V105Z',x:[80,340],m:[['A',80,340,240,'h'],['B',65,205,370,'v']]}
+  }[v];
+  if(!sh) return '';
+  var id='tsc-c'+(++SVGN), g='<defs><clipPath id="'+id+'"><path d="'+sh.d+'"/></clipPath></defs>';
+  g+='<path d="'+sh.d+'" fill="#3f6e64"/>';
+  g+='<g clip-path="url(#'+id+')">';
+  for(var x=sh.x[0]+45;x<sh.x[1]-20;x+=50) g+='<rect x="'+(x-3)+'" y="20" width="6" height="240" fill="#c9ced1"/>';
+  g+='</g><path d="'+sh.d+'" fill="none" stroke="#2f544c" stroke-width="3"/>';
+  if(maten) sh.m.forEach(function(q){
+    var L=q[0], a=q[1], b=q[2], c=q[3], hor=q[4]==='h', mid=(a+b)/2;
+    var ln=hor?'M'+a+' '+c+'H'+b+'M'+a+' '+(c-7)+'V'+(c+7)+'M'+b+' '+(c-7)+'V'+(c+7):'M'+c+' '+a+'V'+b+'M'+(c-7)+' '+a+'H'+(c+7)+'M'+(c-7)+' '+b+'H'+(c+7);
+    var cx=hor?mid:c, cy=hor?c:mid;
+    g+='<path d="'+ln+'" stroke="#343e40" stroke-width="2" fill="none"/><circle cx="'+cx+'" cy="'+cy+'" r="13" fill="#ffcb01" stroke="#343e40" stroke-width="2"/>'+
+       '<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="15" font-weight="700" fill="#343e40">'+L+'</text>';
+  });
+  return '<svg viewBox="0 0 420 280" role="img" aria-label="Tekening '+e(v)+'" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
+}
+
 /* ---------- onderdelen ---------- */
 function rij(v,k,opt){
   opt=opt||{}; var sub=opt.sub!=null?opt.sub:txt(v), aan=S[k]===v, adv=v===ADVIES, u=adv?'':img(opt.beeld||v);
-  var th=u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':adv?'?':'';
+  var sv=k==='vorm'?vormSvg(v,false):'';
+  var th=sv?sv:u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':adv?'?':'';
   return '<button type="button" class="thc-row'+(adv?' thc-adv':'')+'" aria-pressed="'+aan+'" data-k="'+k+'" data-v="'+e(v)+'">'+
     '<span class="thc-thumb'+(opt.foto?' thc-foto':'')+'">'+th+'</span><span><b>'+e(opt.naam||v)+lab(v)+'</b>'+(sub?'<small>'+e(sub)+'</small>':'')+'</span><span class="thc-dot"></span>'+
     (aan&&sub?'<span class="thc-rtxt">'+e(sub)+'</span>':'')+'</button>';
@@ -360,13 +385,14 @@ function gekozen(){
   return r.length?'<div class="thc-gekozen" aria-hidden="true">'+r.map(function(x){return '<span><i>'+e(x[0])+'</i>'+e(x[1])+'</span>';}).join('')+'</div>':'';
 }
 function podium(){
-  var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','oproller'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', tek=false, adv=v===ADVIES;
+  var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','oproller'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', sv='', adv=v===ADVIES;
   if(st.contact) v=S.uitvoering;
   if(adv){}
-  else if(k==='kleur'||k==='vorm'){ u=img(v); tek=k==='vorm'; if(!u) u=img(S.uitvoering), tek=false; }
+  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv) u=img(S.uitvoering); }
+  else if(k==='kleur'){ u=img(v)||img(S.uitvoering); }
   else u=img(v)||img(S.uitvoering);
   var ut=adv?'':txt(v);
-  return '<figure class="thc-stage"><div class="thc-pic'+(tek?' thc-tek':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>Geen probleem, bestel de sample kit of laat je adviseren</p></div>':u?(tek?'<img class="thc-fg" src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">':beeld(u)):'')+
+  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>Geen probleem, bestel de sample kit of laat je adviseren</p></div>':sv?sv:u?beeld(u):'')+
     (v&&!adv?'<figcaption>'+e(v)+'</figcaption>':'')+gekozen()+'</div>'+
     (ut?'<div class="thc-uitleg"><b>'+e(v)+'</b><p>'+e(ut)+'</p></div>':'')+usps()+'</figure>';
 }
