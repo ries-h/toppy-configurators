@@ -86,16 +86,18 @@
     }
 
     d.addEventListener('click', function (e) {
-        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey) return; /* ctrl/cmd-klik: gewoon nieuw tabblad */
+        if (e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey) return; /* ctrl/cmd-klik: gewoon nieuw tabblad */
         var t = e.target.closest(KNOP);
         if (t) {
-            e.preventDefault();
+            /* in de capture-fase en niet doorgeven: anders kan het linkscript van de site de klik
+               eerder afhandelen en naar de losse pagina doorsturen (gebeurde soms wel, soms niet) */
+            e.preventDefault(); e.stopPropagation();
             var h = (t.getAttribute('href') || '').split(/[?#]/)[0], bestand = 'stavenafdekking.html';
             for (var b in CONFIGURATORS) if (h === MAP + b) bestand = b;
             open(bestand); return;
         }
         if (e.target.closest('[data-staven-sluit]')) { e.preventDefault(); sluit(); }
-    });
+    }, true);
     d.addEventListener('keydown', function (e) { if (e.key === 'Escape') sluit(); });
     /* berichten uit de configurator: kruisje, geladen, verzonden */
     window.addEventListener('message', function (e) {
