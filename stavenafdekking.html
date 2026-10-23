@@ -327,11 +327,17 @@ function lbl(v){ return v; }
 /* ---------- rekenen, gelijk aan calculateM2 op /category/2735 ---------- */
 function getal(x){ var n=parseInt(String(x).replace(/\D/g,''),10); return isNaN(n)?null:n; }
 function maatOk(){ var z=vorm().zijden, a=getal(S.a), b=getal(S.b), c=getal(S.c);
-  return a!==null&&a>=10&&(z<2||(b!==null&&b>=10))&&(z<3||(c!==null&&c>=1)); }
+  return a!==null&&a>=100&&(z<2||(b!==null&&b>=100))&&(z<3||(c!==null&&c>=1)); }
+// echte oppervlakte incl. overspan, zonder het minimum van 20 m²
+function m2echt(){ var m=m2(); return m===null?null:m2r; }
+var m2r=null;
+// tekst voor overzicht en aanvraag: echte oppervlakte, en of het minimum van 20 m² geldt
+function opp(){ var r=m2echt(), s=r.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m² incl. overspan'; return r<20?s+', gerekend als 20 m² (minimum)':s; }
 function m2(){
   if(!maatOk()) return null;
   var z=vorm().zijden, a=getal(S.a)/100+0.5, b=(getal(S.b)||0)/100, c=(getal(S.c)||0)/100, r;
   if(z===1) r=a*a; else if(z===2) r=a*(b+0.5); else r=(a+0.4)*(b+c+0.5);
+  m2r=r;
   return Math.max(r,20);
 }
 function prijsPm(){ return INSTELLINGEN.prijzen[S.uitvoering]||INSTELLINGEN.prijzen.Standaard; }
@@ -413,7 +419,7 @@ function maatTekst(){
 function blokken(){
   var m=m2(), p=indicatie();
   return [[0,'Afdekking',[['Uitvoering',S.uitvoering+' · '+eur(prijsPm(),true)+' per m²'],['Kleur',S.kleur],['Oprollen',S.oproller]]],
-          [1,'Zwembad',[['Vorm',S.vorm],['Binnenmaat',maatTekst()],['Oppervlakte',m===null?'Volgt in je voorstel':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m² incl. overspan']]],
+          [1,'Zwembad',[['Vorm',S.vorm],['Binnenmaat',maatTekst()],['Oppervlakte',m===null?'Volgt in je voorstel':opp()]]],
           [0,'Prijsindicatie',[['Totaal',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw']]]];
 }
 function overzicht(knop){
@@ -428,9 +434,9 @@ function veld(id,label,type,ac,ph,extra){
 function maatVelden(){
   var z=vorm().zijden, l=maatLabels(z,S.vorm), m=m2(), p=indicatie(), h='<fieldset class="thc-q"><legend>Binnenmaat in cm</legend><div class="thc-maten">';
   l.forEach(function(x){ h+=veld(x[0],x[1],'text','off','bijv. '+(x[0]==='c'?'120':x[0]==='a'?'800':'400'),' inputmode="numeric" data-maat="1"'); });
-  h+='</div><p class="thc-hint">Hele centimeters. Minimaal 20 m² inclusief overspan.</p>';
+  h+='</div><p class="thc-hint">Hele centimeters, dus 5 meter is 500. Minimaal 20 m² inclusief overspan.</p>';
   h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
-     '<span>Oppervlakte incl. overspan <b>'+m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(p===null?'':'<span>Prijsindicatie <b>'+eur(Math.round(p))+'</b></span><small>'+e(S.uitvoering)+', incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten</small>'))+'</div>';
+     '<span>Oppervlakte incl. overspan <b>'+m2echt().toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(m2echt()<20?'<small>Kleiner dan 20 m²: we rekenen met het minimum van 20 m².</small>':'')+(p===null?'':'<span>Prijsindicatie <b>'+eur(Math.round(p))+'</b></span><small>'+e(S.uitvoering)+', incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten</small>'))+'</div>';
   if(S.vorm==='Houten zwembad') h+='<div class="thc-tip">Bekijk ook de <a href="'+HOUTEN+'" target="_blank" rel="noopener">stavenafdekkingen voor houten zwembaden</a>.</div>';
   return h+'</fieldset>';
 }
@@ -503,7 +509,7 @@ function velden(){
   var naam=[S.voornaam,S.achternaam].filter(Boolean).join(' ');
   var sam=['KLANT','Naam: '+(naam||'-'),'E-mail: '+(S.email||'-'),'Telefoon: '+(S.tel||'-'),'Postcode en plaats: '+([S.postcode,S.plaats].filter(Boolean).join(' ')||'-'),'',
     'SAMENSTELLING VIA CONFIGURATOR','Uitvoering: '+S.uitvoering+' ('+eur(prijsPm(),true)+' per m²)','Vorm: '+S.vorm,'Binnenmaat: '+maatTekst(),
-    'Oppervlakte incl. overspan: '+(m===null?'onbekend':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²'),'Kleur: '+S.kleur,'Oprollen: '+S.oproller,
+    'Oppervlakte incl. overspan: '+(m===null?'onbekend':opp()),'Kleur: '+S.kleur,'Oprollen: '+S.oproller,
     'Prijsindicatie: '+(p===null?'n.v.t.':eur(Math.round(p))+' incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten')];
   v['q18_samenstellingConfigurator']=sam.join('\n');
   // Staven-formulier (2026-10-23): q16 heet "Naam" (Requester Name in Freshdesk), q20 is de wensenvraag
@@ -536,7 +542,7 @@ root.addEventListener('click',function(ev){
   if(a.getAttribute('data-a')==='sluiten') return sluit();
   if(a.getAttribute('data-a')==='terug') return ga(stap-1);
   lees();
-  if(stap===1&&!maatOk()&&!vorm().geenPrijs){ fout={maat:'Vul alle maten in hele centimeters in, dan rekenen we de oppervlakte uit.'}; return render(); }
+  if(stap===1&&!maatOk()&&!vorm().geenPrijs){ fout={maat:'Vul alle maten in hele centimeters in (minimaal 100 cm per zijde), dan rekenen we de oppervlakte uit.'}; return render(); }
   if(!STAPPEN[stap].contact) return ga(stap+1);
   fout={};
   if(!S.voornaam) fout.voornaam='Vul je voornaam in.';
