@@ -495,6 +495,11 @@ function velden(){
   // configurator, ook de contactgegevens, staat in q18.
   var v={}, m=m2(), p=indicatie();
   v['formID']=FORM_ID; v['simple_spc']=FORM_ID+'-'+FORM_ID; v['website']='';
+  // dezelfde verborgen velden als het echte JotForm-formulier, zodat JotForm de inzending als gewone
+  // formulierinzending ziet en ook de integraties (Freshdesk) en e-mails uitvoert
+  var nu=Date.now(); v['submitSource']='form'; v['submitDate']=String(nu); v['buildDate']=String(nu);
+  v['jsExecutionTracker']='build-date-'+nu+'=>init-started:'+nu+'=>submit-validation-passed:'+nu;
+  v['event_id']=nu+'_'+FORM_ID+'_'+Math.random().toString(36).slice(2,9);
   var naam=[S.voornaam,S.achternaam].filter(Boolean).join(' ');
   var sam=['KLANT','Naam: '+(naam||'-'),'E-mail: '+(S.email||'-'),'Telefoon: '+(S.tel||'-'),'Postcode en plaats: '+([S.postcode,S.plaats].filter(Boolean).join(' ')||'-'),'',
     'SAMENSTELLING VIA CONFIGURATOR','Uitvoering: '+S.uitvoering+' ('+eur(prijsPm(),true)+' per m²)','Vorm: '+S.vorm,'Binnenmaat: '+maatTekst(),
