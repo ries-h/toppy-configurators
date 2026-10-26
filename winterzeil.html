@@ -62,6 +62,7 @@
 /* kleurstaal of productfoto (haring, grondanker): op wit, niet uitvergroot, geen wazige rand */
 #toppy-sc .thc-pic.thc-wit{background:#fff}
 #toppy-sc .thc-pic.thc-wit .thc-fg{inset:14%;width:72%;height:72%}
+#toppy-sc .thc-pic.thc-wit.thc-vol .thc-fg{inset:0;width:100%;height:100%}
 #toppy-sc .thc-pic.thc-tek svg{position:absolute;inset:6%;width:88%;height:88%;display:block}
 #toppy-sc .thc-thumb svg{width:100%;height:100%;display:block}
 #toppy-sc .thc-vraag{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--soft);text-align:center;padding:16px}
@@ -247,7 +248,7 @@ var INSTELLINGEN = {
     "Budget": "budget.webp",
     "Basis": "basis.webp",
     "Deluxe": "deluxe.webp",
-    // Houten zwembad: foto van Ries, als houten-zwembad.jpg naast deze pagina in de repo (2026-10-26)
+    // Houten zwembad: productfoto van Ries, op wit gezet en bijgesneden tot 1200 x 900 (2026-10-26)
     "Houten zwembad": "houten-zwembad.jpg",
     "Amandel / Beige": "https://cdn.toppy.nl/catalog/product/6606/amandel-beige.jpg",
     "Groen / Beige": "https://cdn.toppy.nl/catalog/product/6607/groen-beige.jpg",
@@ -255,8 +256,10 @@ var INSTELLINGEN = {
     "Grijs / Grijs": "https://cdn.toppy.nl/catalog/product/6609/grijs-beige.jpg",
     "Antraciet / Grijs": "https://cdn.toppy.nl/catalog/product/6610/antraciet-grijs_1.jpg",
     "Blauw / Beige": "https://cdn.toppy.nl/catalog/product/6605/blauw-beige.jpg",
-    "Standaard P-haring": "https://cdn.toppy.nl/catalog/product/6615/pharing_1.jpg",
-    "Intrekbare grondankers": "https://cdn.toppy.nl/catalog/product/6616/intrekbaar-grondanker-rvs.jpg"
+    // P-haring en grondanker: scherpere foto's van Ries in de repo (2026-10-26); p-haring.jpg is zijn
+    // Gemini-foto op wit gezet en verkleind tot 1000 px
+    "Standaard P-haring": "p-haring.jpg",
+    "Intrekbare grondankers": "rvs_grondanker.jpg"
   },
   // Korte uitleg per keuze (feiten van toppy.nl, configurator 1028).
   teksten: {
@@ -414,11 +417,11 @@ function podium(){
   var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','bevestiging'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', sv='', wit=false, adv=v===ADVIES||(k==='vorm'&&v===ANDERS);
   if(st.contact) v=S.uitvoering;
   if(adv){}
-  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv) u=img(v)||img(S.uitvoering); }
+  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv){ u=img(v); wit=u?'vol':false; if(!u) u=img(S.uitvoering); } }
   else if(k==='kleur'||k==='bevestiging'){ u=img(v); wit=!!u; if(!u) u=img(S.uitvoering); }
   else u=img(v)||img(S.uitvoering);
   var ut=v===ADVIES?'':txt(v), vt=v===ANDERS?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, een zwembadspecialist denkt met je mee';
-  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':wit?' thc-wit':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>'+vt+'</p></div>':sv?sv:u?beeld(u,wit):'')+
+  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':wit?' thc-wit'+(wit==='vol'?' thc-vol':''):'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>'+vt+'</p></div>':sv?sv:u?beeld(u,wit):'')+
     (v&&!adv?'<figcaption>'+e(v)+'</figcaption>':'')+gekozen()+'</div>'+
     (ut?'<div class="thc-uitleg"><b>'+e(v)+'</b><p>'+e(ut)+'</p></div>':'')+usps()+'</figure>';
 }
@@ -481,7 +484,7 @@ function render(){
   h+='<nav class="thc-steps" aria-label="Stappen">'+STAPPEN.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
   h+='<div class="thc-main">'+podium()+'<section class="thc-panel"><h2>'+st.titel+'</h2><p class="thc-lead">'+st.lead+'</p>';
   if(stap===0) h+='<div class="thc-cards">'+UITVOERINGEN.map(kaart).join('')+'</div>';
-  if(stap===1){ h+='<fieldset class="thc-q"><legend>Vorm</legend><div class="thc-list">'+VORMEN.map(function(x){return rij(x.v,'vorm',{sub:x.geenPrijs?txt(x.v):'',foto:x.v==='Houten zwembad'});}).join('')+'</div></fieldset>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'')+maatVelden(); }
+  if(stap===1){ h+='<fieldset class="thc-q"><legend>Vorm</legend><div class="thc-list">'+VORMEN.map(function(x){return rij(x.v,'vorm',{sub:x.geenPrijs?txt(x.v):''});}).join('')+'</div></fieldset>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'')+maatVelden(); }
   if(stap===2){ h+='<fieldset class="thc-q"><legend>Kleur</legend><div class="thc-list">'+KLEUREN.map(function(k){return rij(k,'kleur',{sub:''});}).join('')+rij(ADVIES,'kleur',{sub:'Een specialist helpt je kiezen'})+'</div></fieldset>';
     if(S.uitvoering==='Deluxe') h+='<div class="thc-tip">Deluxe is er niet in Beige / Beige.</div>'; }
   if(stap===3) h+='<fieldset class="thc-q"><legend>Bevestiging</legend><div class="thc-list">'+
