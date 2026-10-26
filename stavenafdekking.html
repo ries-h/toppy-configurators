@@ -498,7 +498,8 @@ function ga(n){ lees(); laatst=null; fout={}; stap=Math.max(0,Math.min(STAPPEN.l
 function velden(){
   // Het JotForm-formulier heeft "Wil je alvast iets aan ons doorgeven?" (q16), het verborgen veld
   // "Samenstelling configurator" (q18) en een verborgen E-mailveld (q19). Alles van de
-  // configurator, ook de contactgegevens, staat in q18.
+  // configurator, ook de contactgegevens, staat in q18 (reserve). Elk gegeven staat daarnaast in een
+  // eigen verborgen veld (q21 t/m q29) voor een overzichtelijk Freshdesk-ticket.
   var v={}, m=m2(), p=indicatie();
   v['formID']=FORM_ID; v['simple_spc']=FORM_ID+'-'+FORM_ID; v['website']='';
   // dezelfde verborgen velden als het echte JotForm-formulier, zodat JotForm de inzending als gewone
@@ -516,6 +517,16 @@ function velden(){
   v['q20_wilJe']=S.wensen;
   v['q19_email']=S.email; // verborgen E-mailveld: voor "Antwoord-aan" in de melding aan klantenservice
   v['q16_q16_textarea14']=naam; // Naam-veld: "Requester Name" in de Freshdesk-integratie
+  // Losse verborgen velden (2026-10-26), zodat het Freshdesk-ticket per gegeven een vet label toont
+  v['q21_telefoon']=S.tel;
+  v['q22_postcodeEn']=[S.postcode,S.plaats].filter(Boolean).join(' ');
+  v['q23_uitvoering']=S.uitvoering+' ('+eur(prijsPm(),true)+' per m²)';
+  v['q24_vormZwembad']=S.vorm;
+  v['q25_binnenmaat']=maatTekst();
+  v['q26_oppervlakte']=m===null?'Onbekend':opp();
+  v['q27_kleur']=S.kleur;
+  v['q28_oprollen']=S.oproller;
+  v['q29_prijsindicatie']=p===null?'Volgt in het voorstel':eur(Math.round(p))+' incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten';
   return v;
 }
 function verstuur(){
