@@ -12,8 +12,7 @@
      Toppy configurator winternet op maat (losse pagina, GitHub Pages)
      Kopie van de configurator winterzeil (winterzeil.html). Op toppy.nl opent popup.js
      deze pagina als venster over de pagina (zie README).
-     Aanvragen gaan voorlopig naar JotForm 262952653525362 (Offerte aanvragen winterzeil),
-     met "Type: Winternet ..." in de samenstelling. Eigen formulier? Pas FORM_ID aan.
+     Aanvragen gaan naar JotForm 262952653525362 (Offerte aanvragen winternet; was eerst het winterzeil-formulier).
      Rekenwijze gelijk aan de configurator /category/1712 (calculateM2, 30 cm overspan,
      gecontroleerd op toppy.nl 2026-10-26):
        rond, achthoekig:                  (A + 0,6)²
@@ -230,7 +229,7 @@ html.thc-los #toppy-sc.thc-app{width:min(1080px,100%);height:min(860px,calc(100v
 /* ================= INSTELLINGEN ================= */
 var INSTELLINGEN = {
   // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
-  // Aanvragen gaan naar JotForm 262952653525362 (Offerte aanvragen winterzeil), type Winternet.
+  // Aanvragen gaan naar JotForm 262952653525362 (Offerte aanvragen winternet).
   verzenden: true,
   // Prijs per m² incl. btw (configurator /category/1712). Gewijzigd? Pas hier aan.
   prijzen: { "Budget": 13.95, "Basis": 16.95, "Deluxe": 23.95 },
@@ -519,6 +518,17 @@ function velden(){
   v['q16_q16_textarea14']=S.wensen;
   v['q19_email']=S.email; // verborgen E-mailveld: voor "Antwoord-aan" in de melding aan klantenservice
   v['q20_naam']=naam; // Naam-veld: "Requester Name" in de Freshdesk-integratie
+  // Losse verborgen velden (2026-10-26), zodat het Freshdesk-ticket per gegeven een vet label toont
+  v['q21_telefoon']=S.tel;
+  v['q22_postcodeEn']=[S.postcode,S.plaats].filter(Boolean).join(' ');
+  v['q23_product']='Winternet op maat';
+  v['q24_type']=S.uitvoering+' ('+eur(prijsPm(),true)+' per m²)';
+  v['q25_vormZwembad']=S.vorm;
+  v['q26_binnenmaat']=maatTekst();
+  v['q27_oppervlakte']=m===null?'Onbekend':opp();
+  v['q28_kleur']=S.kleur;
+  v['q29_bevestiging']=S.bevestiging+(ankerPm()?' (+ '+eur(ankerPm(),true)+' per m²)':'');
+  v['q30_prijsindicatie']=p===null?'Volgt in het voorstel':eur(Math.round(p))+' incl. btw en € '+INSTELLINGEN.vast+' productiekosten';
   return v;
 }
 function verstuur(){
