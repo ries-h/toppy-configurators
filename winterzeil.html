@@ -12,7 +12,7 @@
      Toppy configurator winterzeil op maat (losse pagina, GitHub Pages)
      Zelfde opzet als de configurator stavenafdekking. Op toppy.nl opent popup.js
      deze pagina als venster over de pagina (zie README).
-     Aanvragen gaan naar JotForm 262952653525362 (Offerte aanvragen winterzeil),
+     Aanvragen gaan naar JotForm 262983013798368 (kopie van Offerte aanvragen winterzeil, 2026-10-26),
      dezelfde velden als het staven-formulier (q16 wensen, q18 samenstelling, q19 e-mail).
      Rekenwijze gelijk aan de configurator /category/1028 (calculateM2, 30 cm overspan):
        rond, achthoekig:                  (A + 0,6)²
@@ -229,7 +229,7 @@ html.thc-los #toppy-sc.thc-app{width:min(1080px,100%);height:min(860px,calc(100v
 /* ================= INSTELLINGEN ================= */
 var INSTELLINGEN = {
   // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
-  // Aanvragen gaan naar JotForm 262952653525362 (Offerte aanvragen winterzeil).
+  // Aanvragen gaan naar JotForm 262983013798368 (kopie van Offerte aanvragen winterzeil, 2026-10-26).
   verzenden: true,
   // Prijs per m² incl. btw (configurator /category/1028). Gewijzigd? Pas hier aan.
   prijzen: { "Budget": 14.95, "Basis": 17.95, "Deluxe": 24.95 },
@@ -272,7 +272,7 @@ var INSTELLINGEN = {
 };
 /* ================= Hieronder niets aanpassen ================= */
 
-var FORM_ID = '262952653525362';
+var FORM_ID = '262983013798368';
 var FORM_URL = 'https://eu-submit.jotform.com/submit/'+FORM_ID;
 var ADVIES = 'Weet ik nog niet';
 var HOUTEN = 'https://www.toppy.nl/category/1334/zwembad/afdekzeil-zwembad/winterzeil-zwembad/standaard-winterzeil-houten-zwembaden.html';
@@ -520,6 +520,17 @@ function velden(){
   v['q16_q16_textarea14']=S.wensen;
   v['q19_email']=S.email; // verborgen E-mailveld: voor "Antwoord-aan" in de melding aan klantenservice
   v['q20_naam']=naam; // Naam-veld: "Requester Name" in de Freshdesk-integratie
+  // Losse verborgen velden (2026-10-26), zodat het Freshdesk-ticket per gegeven een vet label toont
+  v['q21_telefoon']=S.tel;
+  v['q22_postcodeEn']=[S.postcode,S.plaats].filter(Boolean).join(' ');
+  v['q23_product']='Winterzeil op maat';
+  v['q30_type']=S.uitvoering+' ('+eur(prijsPm(),true)+' per m²)';
+  v['q24_vormZwembad']=S.vorm;
+  v['q25_binnenmaat']=maatTekst();
+  v['q26_oppervlakte']=m===null?'Onbekend':opp();
+  v['q27_kleur']=S.kleur;
+  v['q28_bevestiging']=S.bevestiging+(ankerPm()?' (+ '+eur(ankerPm(),true)+' per m²)':'');
+  v['q29_prijsindicatie']=p===null?'Volgt in het voorstel':eur(Math.round(p))+' incl. btw en € '+INSTELLINGEN.vast+' productiekosten';
   return v;
 }
 function verstuur(){
