@@ -59,6 +59,10 @@
 #toppy-sc .thc-fg{object-fit:contain}
 #toppy-sc .thc-bg{object-fit:cover;filter:blur(22px) saturate(1.1);transform:scale(1.2);opacity:.85}
 #toppy-sc .thc-pic.thc-tek{background:#fff}
+/* kleurstaal of oproller: op wit, niet uitvergroot, geen wazige rand; houten zwembad vult het vlak */
+#toppy-sc .thc-pic.thc-wit{background:#fff}
+#toppy-sc .thc-pic.thc-wit .thc-fg{inset:14%;width:72%;height:72%}
+#toppy-sc .thc-pic.thc-wit.thc-vol .thc-fg{inset:0;width:100%;height:100%}
 #toppy-sc .thc-pic.thc-tek svg{position:absolute;inset:6%;width:88%;height:88%;display:block}
 #toppy-sc .thc-thumb svg{width:100%;height:100%;display:block}
 #toppy-sc .thc-vraag{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--soft);text-align:center;padding:16px}
@@ -208,6 +212,8 @@
   #toppy-sc.thc-app .thc-stage{display:contents}
   #toppy-sc.thc-app .thc-pic{position:sticky;top:0;z-index:3;aspect-ratio:auto;height:min(52vw,28vh);border-radius:0;box-shadow:0 2px 8px rgba(0,0,0,.12)}
   #toppy-sc.thc-app .thc-pic figcaption{display:none}
+  #toppy-sc.thc-app .thc-vraag p{display:none}
+  #toppy-sc.thc-app .thc-vraag span{width:auto;height:72%;font-size:clamp(40px,12vw,64px)}
   #toppy-sc.thc-app .thc-gekozen{display:flex}
   #toppy-sc.thc-app .thc-uitleg{display:none}
   #toppy-sc.thc-app .thc-stage .thc-usp{margin:12px 14px 0}
@@ -250,6 +256,8 @@ var INSTELLINGEN = {
     "Donkergrijs": "https://cdn.toppy.nl/catalog/product/7957/donkergrijs.png",
     "Lichtblauw": "https://cdn.toppy.nl/catalog/product/7920/lichtblauw.png",
     "Groen": "https://cdn.toppy.nl/catalog/product/7919/groen.png",
+    // Houten zwembad: zelfde foto als in de winterzeil-configurator (houten-zwembad.jpg in de repo)
+    "Houten zwembad": "houten-zwembad.jpg",
     "Met de zwengel": "https://cdn.toppy.nl/catalog/product/7969/handmatige_oproller_2.jpg",
     "Scoot": "https://cdn.toppy.nl/catalog/product/24313/scoot.png",
     "Rolltrot": "https://cdn.toppy.nl/catalog/product/7970/rolltrot.jpg",
@@ -279,9 +287,8 @@ var INSTELLINGEN = {
 
 var FORM_URL = 'https://eu-submit.jotform.com/submit/262934506309056';
 var FORM_ID = '262934506309056';
-var ADVIES = 'Weet ik nog niet';
+var ADVIES = 'Weet ik nog niet', ANDERS = 'Andere vorm';
 var SAMPLE = 'https://www.toppy.nl/product/19168/sample-kit-stavenafdekking.html';
-var HOUTEN = 'https://www.toppy.nl/category/2736/zwembad/afdekzeil-zwembad/stavenafdekking-zwembad/stavenafdekkingen-houten-zwembad.html';
 
 var UITVOERINGEN = ['Standaard','Tube','Extra Top'];
 // zijden: 1 = alleen A, 2 = A en B, 3 = A, B en C (zoals numberOfSides op /category/2735)
@@ -320,7 +327,7 @@ function eur(n,dec){return '€ '+n.toLocaleString('nl-NL',{minimumFractionDigit
 function img(k){var u=(INSTELLINGEN.afbeeldingen||{})[k];return u&&!kapot[u]?u:'';}
 function txt(v){return ((INSTELLINGEN.teksten||{})[v])||'';}
 function lab(v,cls){ var l=(INSTELLINGEN.labels||{})[v]; if(!l||!l.tekst) return ''; var k=/^(geel|groen|donker)$/.test(l.kleur)?l.kleur:'geel'; return '<span class="thc-tag thc-tag-'+k+(cls?' '+cls:'')+'">'+e(l.tekst)+'</span>'; }
-function beeld(u){return '<img class="thc-bg" src="'+e(u)+'" alt="" aria-hidden="true" data-src="'+e(u)+'"><img class="thc-fg" src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">';}
+function beeld(u,wit){return (wit?'':'<img class="thc-bg" src="'+e(u)+'" alt="" aria-hidden="true" data-src="'+e(u)+'">')+'<img class="thc-fg" src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">';}
 function vorm(){ return VORMEN.filter(function(x){return x.v===S.vorm;})[0]; }
 function lbl(v){ return v; }
 
@@ -378,9 +385,9 @@ function vormSvg(v, maten){
 
 /* ---------- onderdelen ---------- */
 function rij(v,k,opt){
-  opt=opt||{}; var sub=opt.sub!=null?opt.sub:txt(v), aan=S[k]===v, adv=v===ADVIES, u=adv?'':img(opt.beeld||v);
+  opt=opt||{}; var sub=opt.sub!=null?opt.sub:txt(v), aan=S[k]===v, adv=v===ADVIES, vr=adv||v===ANDERS, u=vr?'':img(opt.beeld||v);
   var sv=k==='vorm'?vormSvg(v,false):'';
-  var th=sv?sv:u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':adv?'?':'';
+  var th=sv?sv:u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':vr?'?':'';
   return '<button type="button" class="thc-row'+(adv?' thc-adv':'')+'" aria-pressed="'+aan+'" data-k="'+k+'" data-v="'+e(v)+'">'+
     '<span class="thc-thumb'+(opt.foto?' thc-foto':'')+'">'+th+'</span><span><b>'+e(opt.naam||v)+lab(v)+'</b>'+(sub?'<small>'+e(sub)+'</small>':'')+'</span><span class="thc-dot"></span>'+
     (aan&&sub?'<span class="thc-rtxt">'+e(sub)+'</span>':'')+'</button>';
@@ -399,14 +406,14 @@ function gekozen(){
   return r.length?'<div class="thc-gekozen" aria-hidden="true">'+r.map(function(x){return '<span><i>'+e(x[0])+'</i>'+e(x[1])+'</span>';}).join('')+'</div>':'';
 }
 function podium(){
-  var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','oproller'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', sv='', adv=v===ADVIES;
+  var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','oproller'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', sv='', wit=false, adv=v===ADVIES||(k==='vorm'&&v===ANDERS);
   if(st.contact) v=S.uitvoering;
   if(adv){}
-  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv) u=img(S.uitvoering); }
-  else if(k==='kleur'){ u=img(v)||img(S.uitvoering); }
+  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv){ u=img(v); wit=u?'vol':false; if(!u) u=img(S.uitvoering); } }
+  else if(k==='kleur'||k==='oproller'){ u=img(v); wit=!!u; if(!u) u=img(S.uitvoering); }
   else u=img(v)||img(S.uitvoering);
-  var ut=adv?'':txt(v);
-  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>Geen probleem, bestel de sample kit of laat je adviseren</p></div>':sv?sv:u?beeld(u):'')+
+  var ut=v===ADVIES?'':txt(v), vt=v===ANDERS?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, bestel de sample kit of laat je adviseren';
+  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':wit?' thc-wit'+(wit==='vol'?' thc-vol':''):'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>'+vt+'</p></div>':sv?sv:u?beeld(u,wit):'')+
     (v&&!adv?'<figcaption>'+e(v)+'</figcaption>':'')+gekozen()+'</div>'+
     (ut?'<div class="thc-uitleg"><b>'+e(v)+'</b><p>'+e(ut)+'</p></div>':'')+usps()+'</figure>';
 }
@@ -437,7 +444,6 @@ function maatVelden(){
   h+='</div><p class="thc-hint">Hele centimeters, dus 5 meter is 500. Minimaal 20 m² inclusief overspan.</p>';
   h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
      '<span>Oppervlakte incl. overspan <b>'+m2echt().toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(m2echt()<20?'<small>Kleiner dan 20 m²: we rekenen met het minimum van 20 m².</small>':'')+(p===null?'':'<span>Prijsindicatie <b>'+eur(Math.round(p))+'</b></span><small>'+e(S.uitvoering)+', incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten</small>'))+'</div>';
-  if(S.vorm==='Houten zwembad') h+='<div class="thc-tip">Bekijk ook de <a href="'+HOUTEN+'" target="_blank" rel="noopener">stavenafdekkingen voor houten zwembaden</a>.</div>';
   return h+'</fieldset>';
 }
 function formulier(){
