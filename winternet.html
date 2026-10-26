@@ -59,6 +59,9 @@
 #toppy-sc .thc-fg{object-fit:contain}
 #toppy-sc .thc-bg{object-fit:cover;filter:blur(22px) saturate(1.1);transform:scale(1.2);opacity:.85}
 #toppy-sc .thc-pic.thc-tek{background:#fff}
+/* kleurstaal of productfoto (haring, grondanker): op wit, niet uitvergroot, geen wazige rand */
+#toppy-sc .thc-pic.thc-wit{background:#fff}
+#toppy-sc .thc-pic.thc-wit .thc-fg{inset:14%;width:72%;height:72%}
 #toppy-sc .thc-pic.thc-tek svg{position:absolute;inset:6%;width:88%;height:88%;display:block}
 #toppy-sc .thc-thumb svg{width:100%;height:100%;display:block}
 #toppy-sc .thc-vraag{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--soft);text-align:center;padding:16px}
@@ -208,6 +211,8 @@
   #toppy-sc.thc-app .thc-stage{display:contents}
   #toppy-sc.thc-app .thc-pic{position:sticky;top:0;z-index:3;aspect-ratio:auto;height:min(52vw,28vh);border-radius:0;box-shadow:0 2px 8px rgba(0,0,0,.12)}
   #toppy-sc.thc-app .thc-pic figcaption{display:none}
+  #toppy-sc.thc-app .thc-vraag p{display:none}
+  #toppy-sc.thc-app .thc-vraag span{width:auto;height:72%;font-size:clamp(40px,12vw,64px)}
   #toppy-sc.thc-app .thc-gekozen{display:flex}
   #toppy-sc.thc-app .thc-uitleg{display:none}
   #toppy-sc.thc-app .thc-stage .thc-usp{margin:12px 14px 0}
@@ -273,7 +278,7 @@ var INSTELLINGEN = {
 
 var FORM_ID = '262952653525362';
 var FORM_URL = 'https://eu-submit.jotform.com/submit/'+FORM_ID;
-var ADVIES = 'Weet ik nog niet';
+var ADVIES = 'Weet ik nog niet', ANDERS = 'Andere vorm';
 var WINTERZEIL = 'https://www.toppy.nl/category/1028/zwembad/afdekzeil-zwembad/winterzeil-zwembad/winterzeil-op-maat.html';
 var ADVIES_URL = '/vragenformulier';
 
@@ -319,7 +324,7 @@ function eur(n,dec){return '€ '+n.toLocaleString('nl-NL',{minimumFractionDigit
 function img(k){var u=(INSTELLINGEN.afbeeldingen||{})[k];return u&&!kapot[u]?u:'';}
 function txt(v){return ((INSTELLINGEN.teksten||{})[v])||'';}
 function lab(v,cls){ var l=(INSTELLINGEN.labels||{})[v]; if(!l||!l.tekst) return ''; var k=/^(geel|groen|donker)$/.test(l.kleur)?l.kleur:'geel'; return '<span class="thc-tag thc-tag-'+k+(cls?' '+cls:'')+'">'+e(l.tekst)+'</span>'; }
-function beeld(u){return '<img class="thc-bg" src="'+e(u)+'" alt="" aria-hidden="true" data-src="'+e(u)+'"><img class="thc-fg" src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">';}
+function beeld(u,wit){return (wit?'':'<img class="thc-bg" src="'+e(u)+'" alt="" aria-hidden="true" data-src="'+e(u)+'">')+'<img class="thc-fg" src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">';}
 function vorm(){ return VORMEN.filter(function(x){return x.v===S.vorm;})[0]; }
 function lbl(v){ return v; }
 
@@ -382,9 +387,9 @@ function vormSvg(v, maten){
 
 /* ---------- onderdelen ---------- */
 function rij(v,k,opt){
-  opt=opt||{}; var uit=S.uitvoering==='Deluxe'&&NIET_DELUXE[v], sub=uit?'Niet mogelijk bij Deluxe':opt.sub!=null?opt.sub:txt(v), aan=S[k]===v, adv=v===ADVIES, u=adv?'':img(opt.beeld||v);
+  opt=opt||{}; var uit=S.uitvoering==='Deluxe'&&NIET_DELUXE[v], sub=uit?'Niet mogelijk bij Deluxe':opt.sub!=null?opt.sub:txt(v), aan=S[k]===v, adv=v===ADVIES, vr=adv||v===ANDERS, u=vr?'':img(opt.beeld||v);
   var sv=k==='vorm'?vormSvg(v,false):'';
-  var th=sv?sv:u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':adv?'?':'';
+  var th=sv?sv:u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':vr?'?':'';
   return '<button type="button" class="thc-row'+(adv?' thc-adv':'')+'" aria-pressed="'+aan+'" data-k="'+k+'" data-v="'+e(v)+'"'+(uit?' disabled':'')+'>'+
     '<span class="thc-thumb'+(opt.foto?' thc-foto':'')+'">'+th+'</span><span><b>'+e(opt.naam||v)+lab(v)+'</b>'+(sub?'<small>'+e(sub)+'</small>':'')+'</span><span class="thc-dot"></span>'+
     (aan&&sub?'<span class="thc-rtxt">'+e(sub)+'</span>':'')+'</button>';
@@ -403,14 +408,14 @@ function gekozen(){
   return r.length?'<div class="thc-gekozen" aria-hidden="true">'+r.map(function(x){return '<span><i>'+e(x[0])+'</i>'+e(x[1])+'</span>';}).join('')+'</div>':'';
 }
 function podium(){
-  var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','bevestiging'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', sv='', adv=v===ADVIES;
+  var st=STAPPEN[stap], k=['uitvoering','vorm','kleur','bevestiging'][stap], v=laatst||(k?S[k]:S.uitvoering), u='', sv='', wit=false, adv=v===ADVIES||(k==='vorm'&&v===ANDERS);
   if(st.contact) v=S.uitvoering;
   if(adv){}
-  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv) u=img(S.uitvoering); }
-  else if(k==='kleur'){ u=img(v)||img(S.uitvoering); }
+  else if(k==='vorm'){ sv=vormSvg(v,true); if(!sv) u=img(v)||img(S.uitvoering); }
+  else if(k==='kleur'||k==='bevestiging'){ u=img(v); wit=!!u; if(!u) u=img(S.uitvoering); }
   else u=img(v)||img(S.uitvoering);
-  var ut=adv?'':txt(v);
-  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>Geen probleem, een zwembadspecialist denkt met je mee</p></div>':sv?sv:u?beeld(u):'')+
+  var ut=v===ADVIES?'':txt(v), vt=v===ANDERS?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, een zwembadspecialist denkt met je mee';
+  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':wit?' thc-wit':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>'+vt+'</p></div>':sv?sv:u?beeld(u,wit):'')+
     (v&&!adv?'<figcaption>'+e(v)+'</figcaption>':'')+gekozen()+'</div>'+
     (ut?'<div class="thc-uitleg"><b>'+e(v)+'</b><p>'+e(ut)+'</p></div>':'')+usps()+'</figure>';
 }
