@@ -48,7 +48,7 @@
 #toppy-lc .thc-pic{position:relative;aspect-ratio:4/3;border-radius:var(--r2);overflow:hidden;background:var(--soft);box-shadow:0 1px 0 var(--line)}
 #toppy-lc .thc-pic img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 #toppy-lc .thc-pic.thc-wit,#toppy-lc .thc-pic.thc-tek{background:#fff}
-#toppy-lc .thc-pic.thc-wit img{inset:12%;width:76%;height:76%;object-fit:contain}
+#toppy-lc .thc-pic.thc-wit img{inset:6%;width:88%;height:88%;object-fit:contain}
 #toppy-lc .thc-pic.thc-tek svg{position:absolute;inset:7%;width:86%;height:86%;display:block}
 #toppy-lc .thc-vraag{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--soft);text-align:center;padding:20px}
 #toppy-lc .thc-vraag span{display:flex;align-items:center;justify-content:center;width:min(30%,150px);aspect-ratio:1;border-radius:50%;background:#fff;border:2px solid var(--line);font-size:clamp(44px,8vw,84px);font-weight:700;line-height:1}
@@ -259,7 +259,8 @@ var INSTELLINGEN = {
   installatie: 400,     // "Inclusief installatie - vanaf € 400"
   inmeten: 150,         // "+ Inmeten van het zwembad - vanaf € 150"
   afvoeren: 150,        // "+ Afvoeren oude lamellen - vanaf € 150"
-  // Foto's staan in de map lamellendek/ van deze repo (uit het oude JotForm en de DAM van toppy.nl).
+  // Foto's staan in de map lamellendek/ van deze repo: sfeerfoto's van de lamellenpagina (DAM/CMS),
+  // kleuren van de productpagina's op toppy.nl, oprollers (alleen als icoontje) uit het oude JotForm.
   // Een betere foto? Zet hem in lamellendek/ en pas hier de bestandsnaam aan.
   afbeeldingen: {
     "Compleet lamellendek": "lamellendek/situatie-nieuw.webp",
@@ -287,7 +288,9 @@ var INSTELLINGEN = {
     "Contura": "lamellendek/contura.webp",
     "Open Banc Classic": "lamellendek/banc-classic.webp",
     "Open Banc Classic Houtkleur": "lamellendek/banc-classic-hout.webp",
-    "Banc Design": "lamellendek/banc-design.webp"
+    "Banc Design": "lamellendek/banc-design.webp",
+    "Installatie": "lamellendek/installatie.webp",
+    "Overzicht": "lamellendek/overzicht.webp"
   },
   usps: [
     "Klanten geven ons een 9/10",
@@ -448,13 +451,6 @@ function vormSvg(v, maten){
   }
   return '<svg viewBox="0 0 400 290" role="img" aria-label="Tekening '+e(v)+'" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
 }
-// eenvoudige iconen voor installatie (geen goede foto's in het oude formulier)
-var ICOON={
-  zelf:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><path d="M22 34l14-14m-3-5a6 6 0 0 1 8 8l-3 3-5-5z" stroke="#343e40" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="36" r="3" fill="#ffcb01"/></svg>',
-  partner:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><circle cx="32" cy="17" r="7" fill="#343e40"/><path d="M19 40c1-8 6-12 13-12s12 4 13 12z" fill="#343e40"/><path d="M24 13h16v-3a8 8 0 0 0-16 0z" fill="#ffcb01"/></svg>',
-  inmeten:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><rect x="10" y="18" width="44" height="12" rx="2" fill="#ffcb01" stroke="#343e40" stroke-width="2"/><path d="M16 18v5M22 18v4M28 18v5M34 18v4M40 18v5M46 18v4" stroke="#343e40" stroke-width="2"/></svg>',
-  afvoeren:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><path d="M22 16h20l-2 22H24z" fill="#343e40"/><path d="M19 15h26M28 11h8" stroke="#343e40" stroke-width="3" stroke-linecap="round"/><path d="M29 21v13M35 21v13" stroke="#ffcb01" stroke-width="2"/></svg>'
-};
 
 /* ---------- onderdelen ---------- */
 // rij: k = veld in S, v = waarde; opt: naam, sub, prijs [bedrag, onderschrift], beeld, svg, foto, check, adv
@@ -500,9 +496,9 @@ function podium(){
   else if(id==='lamellen'){ v=laatst&&INSTELLINGEN.lamellen[laatst]?laatst:S.type; u=img(v); extra=vergelijking(); }
   else if(id==='kleur'){ v=S.kleur; adv=v===ADVIES; u=img(S.type+'|'+v); wit=!!u; if(!u) u=img(S.type); }
   else if(id==='zwembad'){ v=S.vorm; adv=v==='Andere vorm'; sv=vormSvg(v,true); uitleg=adv?'':'L is de lengte inclusief een eventuele trap, B is de breedte. De lamellen rollen op in de lengte.'; }
-  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.oproller===ADVIES?S.systeem:S.oproller; u=img(v); wit=!!u&&v!==S.systeem; } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je zwembad en je nis.'; } }
-  else if(id==='installatie'){ v=S.type; u=img(S.type); uitleg='Kies je voor zelf installeren? Dan helpen we je op afstand. Is er een kraan nodig, dan regelen we die op aanvraag (tegen betaling).'; }
-  else { v=S.type; u=img(S.type); }
+  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.systeem; u=img(v); } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je zwembad en je nis.'; } }
+  else if(id==='installatie'){ v='Installatie'; u=img('Installatie')||img(S.type); uitleg='Kies je voor zelf installeren? Dan helpen we je op afstand. Is er een kraan nodig, dan regelen we die op aanvraag (tegen betaling).'; }
+  else { v=''; u=img('Overzicht')||img(S.type); }
   var vt=id==='zwembad'?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, een specialist adviseert je persoonlijk';
   return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':wit?' thc-wit':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>'+vt+'</p></div>':sv?sv:u?'<img src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">':'')+
     (v&&!adv&&v!==ADVIES?'<figcaption>'+e(id==='kleur'?S.type+' · '+v:v)+'</figcaption>':'')+gekozen()+'</div>'+
@@ -578,11 +574,11 @@ function inhoud(id){
   }
   if(id==='installatie'){
     h+='<fieldset class="thc-q"><legend>Wie installeert?</legend><div class="thc-list">'+
-      rij('installatie','zelf',{svg:ICOON.zelf,naam:'Ik installeer zelf',sub:'Met onze hulp op afstand'})+
-      rij('installatie','partner',{svg:ICOON.partner,naam:'Inclusief installatie',sub:'Door een van onze partners',prijs:[eur(INSTELLINGEN.installatie),'vanaf']})+'</div></fieldset>'+
+      rij('installatie','zelf',{naam:'Ik installeer zelf',sub:'Met onze hulp op afstand'})+
+      rij('installatie','partner',{naam:'Inclusief installatie',sub:'Door een van onze partners',prijs:[eur(INSTELLINGEN.installatie),'vanaf']})+'</div></fieldset>'+
       '<fieldset class="thc-q"><legend>Extra <small>meerdere keuzes mogelijk</small></legend><div class="thc-list">'+
-      rij('inmeten','1',{check:true,svg:ICOON.inmeten,naam:'Inmeten van het zwembad',sub:'Een partner meet je zwembad precies in',prijs:[eur(INSTELLINGEN.inmeten),'vanaf']})+
-      (nieuw()?'':rij('afvoeren','1',{check:true,svg:ICOON.afvoeren,naam:'Afvoeren oude lamellen',sub:'Wij nemen je oude lamellen mee',prijs:[eur(INSTELLINGEN.afvoeren),'vanaf']}))+'</div></fieldset>';
+      rij('inmeten','1',{check:true,naam:'Inmeten van het zwembad',sub:'Een partner meet je zwembad precies in',prijs:[eur(INSTELLINGEN.inmeten),'vanaf']})+
+      (nieuw()?'':rij('afvoeren','1',{check:true,naam:'Afvoeren oude lamellen',sub:'Wij nemen je oude lamellen mee',prijs:[eur(INSTELLINGEN.afvoeren),'vanaf']}))+'</div></fieldset>';
   }
   if(id==='overzicht') h+=formulier()+'<ul class="thc-usp thc-gerust"><li>Gratis en vrijblijvend</li><li>Persoonlijk voorstel op maat</li></ul>';
   return h;
