@@ -411,6 +411,9 @@ function maatOk(){ var l=getal(S.lengte), b=getal(S.breedte); return l!==null&&b
 function m2(){ return maatOk()?getal(S.lengte)*getal(S.breedte)/10000:null; }
 function oprollerPrijs(){ return nieuw()&&S.systeem==='Bovengronds systeem'?(INSTELLINGEN.oprollers[S.oproller]||0):0; }
 function installatiePrijs(){ return (S.installatie==='partner'?INSTELLINGEN.installatie:0)+(S.inmeten?INSTELLINGEN.inmeten:0)+(S.afvoeren&&!nieuw()?INSTELLINGEN.afvoeren:0); }
+// buismotor of advies: geen vanaf-prijs bekend (het oude formulier had er geen), dus niet als € 0 tellen
+function oprollerOnbekend(){ return nieuw()&&(S.systeem!=='Bovengronds systeem'||!INSTELLINGEN.oprollers[S.oproller]); }
+function excl(){ return oprollerOnbekend()?', excl. oproller':''; }
 function lamelPrijs(){ var m=m2(), p=pm2(); return m===null||p===null?null:m*p; }
 function indicatie(){ var l=lamelPrijs(); return l===null?null:l+oprollerPrijs()+installatiePrijs(); }
 
@@ -497,7 +500,7 @@ function podium(){
   else if(id==='lamellen'){ v=laatst&&INSTELLINGEN.lamellen[laatst]?laatst:S.type; u=img(v); extra=vergelijking(); }
   else if(id==='kleur'){ v=S.kleur; adv=v===ADVIES; u=img(S.type+'|'+v); wit=!!u; if(!u) u=img(S.type); }
   else if(id==='zwembad'){ v=S.vorm; adv=v==='Andere vorm'; sv=vormSvg(v,true); uitleg=adv?'':'L is de lengte inclusief een eventuele trap, B is de breedte. De lamellen rollen op in de lengte.'; }
-  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.oproller===ADVIES?S.systeem:S.oproller; u=img(v); wit=!!u&&v!==S.systeem; } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je nis.'; } }
+  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.oproller===ADVIES?S.systeem:S.oproller; u=img(v); wit=!!u&&v!==S.systeem; } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je nis; de prijs daarvan staat in je voorstel en zit nog niet in de indicatie.'; } }
   else if(id==='installatie'){ v=S.type; u=img(S.type); uitleg='Kies je voor zelf installeren? Dan helpen we je op afstand. Is er een kraan nodig, dan regelen we die op aanvraag (tegen betaling).'; }
   else { v=S.type; u=img(S.type); }
   var vt=id==='zwembad'?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, een specialist adviseert je persoonlijk';
@@ -507,7 +510,7 @@ function podium(){
 }
 function usps(){ var u=(INSTELLINGEN.usps||[]).filter(function(x){return x&&String(x).trim();}); return u.length?'<ul class="thc-usp">'+u.map(function(x){return '<li>'+e(x)+'</li>';}).join('')+'</ul>':''; }
 function maatTekst(){ return maatOk()?'Lengte '+getal(S.lengte)+' cm (incl. trap), breedte '+getal(S.breedte)+' cm':'Nog niet ingevuld'; }
-function oprolTekst(){ if(!nieuw()) return 'Bestaande oproller'+(S.merk?' ('+S.merk+')':''); if(S.systeem!=='Bovengronds systeem') return S.systeem; return S.systeem+': '+S.oproller+(INSTELLINGEN.oprollers[S.oproller]?' (vanaf '+eur(INSTELLINGEN.oprollers[S.oproller])+')':''); }
+function oprolTekst(){ if(!nieuw()) return 'Bestaande oproller'+(S.merk?' ('+S.merk+')':''); if(S.systeem!=='Bovengronds systeem') return S.systeem+' (prijs volgt in je voorstel)'; return S.systeem+': '+S.oproller+(INSTELLINGEN.oprollers[S.oproller]?' (vanaf '+eur(INSTELLINGEN.oprollers[S.oproller])+')':''); }
 function instTekst(){ var r=[S.installatie==='partner'?'Inclusief installatie (vanaf '+eur(INSTELLINGEN.installatie)+')':'Zelf installeren, met hulp op afstand'];
   if(S.inmeten) r.push('inmeten (vanaf '+eur(INSTELLINGEN.inmeten)+')'); if(S.afvoeren&&!nieuw()) r.push('afvoeren oude lamellen (vanaf '+eur(INSTELLINGEN.afvoeren)+')'); return r.join(' + '); }
 function lamelTekst(){ var p=pm2(); return S.type+', '+(S.kleur===ADVIES?'kleur nog niet gekozen':S.kleur)+(p!==null?' (vanaf '+eur(p,true)+' per m²)':''); }
@@ -518,7 +521,7 @@ function blokken(){
           ['zwembad','Zwembad',[['Vorm',S.vorm],['Binnenmaat',maatTekst()],['Oppervlakte',m===null?'Volgt in je voorstel':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²']]],
           [nieuw()?'oprollen':'situatie','Oprollen',[['Oproller',oprolTekst()]]],
           ['installatie','Installatie',[['Installatie',instTekst()]]],
-          ['','Prijsindicatie',[['Vanaf',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw']]]];
+          ['','Prijsindicatie',[['Vanaf',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw'+excl()]]]];
 }
 function overzicht(knop){
   var ids=stappen().map(function(s){return s.id;});
@@ -567,7 +570,7 @@ function inhoud(id){
   if(id==='oprollen'){
     h+='<fieldset class="thc-q"><legend>Type oprolsysteem</legend><div class="thc-list">'+
       rij('systeem','Bovengronds systeem',{foto:true,sub:'Alleen bij een volledig ingegraven zwembad'})+
-      rij('systeem','Onderwater buismotor',{sub:'Er moet een nis in het zwembad zitten'})+
+      rij('systeem','Onderwater buismotor',{sub:'Er moet een nis in het zwembad zitten. Prijs op aanvraag'})+
       rij('systeem',ADVIES,{adv:true,sub:'Een specialist adviseert je'})+'</div></fieldset>';
     if(S.systeem==='Bovengronds systeem') h+='<fieldset class="thc-q"><legend>Oproller</legend><div class="thc-list">'+Object.keys(INSTELLINGEN.oprollers).map(function(o){return rij('oproller',o,{prijs:[eur(INSTELLINGEN.oprollers[o]),'vanaf']});}).join('')+
       rij('oproller',ADVIES,{adv:true,sub:'Wat een keuze! Een specialist adviseert je persoonlijk'})+'</div></fieldset>';
@@ -607,7 +610,7 @@ function render(){
   var kz=[S.situatie==='Vervanglamellen'?'Vervanglamellen':'',S.type,S.kleur!==ADVIES?S.kleur:'',m2()!==null?m2().toLocaleString('nl-NL',{maximumFractionDigits:1})+' m²':''].filter(Boolean).join(' · ');
   h+='<div class="thc-foot">'+(stap>0?'<button type="button" class="thc-btn thc-back" data-a="terug">Vorige</button>':'')+
      (st.contact?'<div class="thc-keuze"><b>Gratis en vrijblijvend</b> · persoonlijk voorstel op maat</div>':'<div class="thc-keuze"><b>Jouw keuze:</b> '+e(kz)+'</div>')+
-     '<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(pm2()||vanafAlles(),true)+' p/m²</b>':'indicatie vanaf<b>'+eur(Math.round(p))+'</b>')+'</div>'+
+     '<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(pm2()||vanafAlles(),true)+' p/m²</b>':(oprollerOnbekend()?'vanaf, excl. oproller':'indicatie vanaf')+'<b>'+eur(Math.round(p))+'</b>')+'</div>'+
      '<button type="button" class="thc-btn thc-go" data-a="verder"'+(bezig?' disabled':'')+'>'+(st.contact?(bezig?'Bezig met versturen…':'Vraag gratis voorstel aan'):'Volgende<span class="thc-wat">: '+ST[stap+1].kort+'</span>')+'</button></div>';
   root.innerHTML=h;
   [].forEach.call(root.querySelectorAll(sc),function(x,i){ if(oud[i]) x.scrollTop=oud[i]; });
@@ -654,7 +657,7 @@ function velden(){
   v['q158_watWil']=[S.wensen||'-','','VIA DE CONFIGURATOR',
     'Lamellen: '+lamelTekst(),'Binnenmaat: '+maatTekst(),'Oppervlakte: '+(m===null?'onbekend':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²'),
     'Oprollen: '+oprolTekst(),'Installatie: '+instTekst(),
-    'Prijsindicatie: '+(p===null?'n.v.t.':'vanaf '+eur(Math.round(p))+' incl. btw'),'','HERKOMST',herkomstTekst()].join('\n');
+    'Prijsindicatie: '+(p===null?'n.v.t.':'vanaf '+eur(Math.round(p))+' incl. btw'+excl()),'','HERKOMST',herkomstTekst()].join('\n');
   if(INSTELLINGEN.herkomstVeld) v[INSTELLINGEN.herkomstVeld]=herkomstTekst();
   return v;
 }
