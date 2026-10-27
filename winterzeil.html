@@ -319,7 +319,7 @@ var STAPPEN = [
   {kort:'Bevestiging', titel:'Hoe zet je het zeil vast?', lead:'P-haringen worden gratis meegeleverd. Op een terras of randtegel zijn grondankers steviger.'},
   {kort:'Overzicht', titel:'Ontvang je persoonlijke voorstel', lead:'Een zwembadspecialist van Toppy bekijkt je keuzes en stuurt je een voorstel op maat.', contact:true}
 ];
-var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false;
+var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false, aangeklikt={};
 var root=document.getElementById('toppy-sc');
 var APP=root.hasAttribute('data-pagina'), IFRAME=window.parent!==window;
 if(APP) root.className='thc-app';
@@ -508,7 +508,8 @@ function render(){
       (S.uitvoering==='Deluxe'?'<div class="thc-tip">Bij Deluxe horen grondankers: de spanveren trekken te hard voor P-haringen.</div>':'');
   if(st.contact) h+=formulier()+'<ul class="thc-usp thc-gerust"><li>Gratis en vrijblijvend</li><li>Persoonlijk voorstel op maat</li></ul>';
   h+='</section></div>';
-  var kz=[S.uitvoering,S.vorm,S.kleur!==ADVIES?S.kleur:''].filter(Boolean).join(' · ');
+  // alleen tonen wat de bezoeker zelf koos of al bevestigde (stap voorbij), niet de standaardwaarden
+  var kz=[['uitvoering',0],['vorm',1],['kleur',2]].filter(function(x){ return (aangeklikt[x[0]]||verst>x[1])&&S[x[0]]!==ADVIES; }).map(function(x){ return S[x[0]]; }).join(' · ')||'nog niets gekozen';
   h+='<div class="thc-foot">'+(stap>0?'<button type="button" class="thc-btn thc-back" data-a="terug">Vorige</button>':'')+
      (st.contact?'<div class="thc-keuze"><b>Gratis en vrijblijvend</b> · persoonlijk voorstel op maat</div>':'<div class="thc-keuze"><b>Jouw keuze:</b> '+e(kz)+'</div>')+
      (APP?'<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(prijsPm(),true)+' p/m²</b>':'indicatie<b>'+eur(Math.round(p))+'</b>')+'</div>':'')+
@@ -581,7 +582,7 @@ function verstuur(){
 root.addEventListener('click',function(ev){
   var o=ev.target.closest('.thc-row,.thc-card');
   if(o){ lees(); var k=o.getAttribute('data-k'), val=o.getAttribute('data-v');
-    S[k]=val; laatst=val; if(k==='vorm'){ fout={}; } deluxeRegels(); render(); return; }
+    S[k]=val; aangeklikt[k]=1; laatst=val; if(k==='vorm'){ fout={}; } deluxeRegels(); render(); return; }
   var g=ev.target.closest('[data-ga]'); if(g&&!g.disabled) return ga(+g.getAttribute('data-ga'));
   var a=ev.target.closest('[data-a]'); if(!a) return;
   if(a.getAttribute('data-a')==='sluiten') return sluit();

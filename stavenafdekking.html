@@ -307,12 +307,12 @@ var S = {uitvoering:'Standaard', vorm:'Rechthoek', a:'', b:'', c:'', kleur:'Lich
   voornaam:'', achternaam:'', email:'', tel:'', postcode:'', plaats:'', wensen:''};
 var STAPPEN = [
   {kort:'Uitvoering', titel:'Kies je uitvoering', lead:'Alle drie op maat gemaakt, van hetzelfde stevige zeil en met 3 jaar garantie. Het verschil zit in de buizen.'},
-  {kort:'Zwembad', titel:'Vorm en maten van je zwembad', lead:'Kies de vorm en vul de binnenmaat in. Wij rekenen 25 cm overspan per zijde bij.'},
+  {kort:'Zwembad', titel:'Vorm en maten van je zwembad', lead:'Kies de vorm en vul de binnenmaat in. Wij rekenen 25 cm overspan per zijde bij, zodat de afdekking aan alle kanten op de rand rust en stevig vast te zetten is.'},
   {kort:'Kleur', titel:'Kies je kleur', lead:'Zes kleuren, zonder toeslag.'},
   {kort:'Oprollen', titel:'Hoe wil je oprollen?', lead:'Er wordt standaard een oproller met zwengel meegeleverd. Wil je het makkelijker, kies dan een automatische oproller op accu.'},
   {kort:'Overzicht', titel:'Ontvang je persoonlijke voorstel', lead:'Een zwembadspecialist van Toppy bekijkt je keuzes en stuurt je een voorstel op maat.', contact:true}
 ];
-var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false;
+var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false, aangeklikt={};
 var root=document.getElementById('toppy-sc');
 var APP=root.hasAttribute('data-pagina'), IFRAME=window.parent!==window;
 if(APP) root.className='thc-app';
@@ -451,7 +451,7 @@ function veld(id,label,type,ac,ph,extra){
 function maatVelden(){
   var z=vorm().zijden, l=maatLabels(z,S.vorm), m=m2(), p=indicatie(), h='<fieldset class="thc-q"><legend>Binnenmaat in cm</legend><div class="thc-maten">';
   l.forEach(function(x){ h+=veld(x[0],x[1],'text','off','bijv. '+(x[0]==='c'?'120':x[0]==='a'?'800':'400'),' inputmode="numeric" data-maat="1"'); });
-  h+='</div><p class="thc-hint">Hele centimeters, dus 5 meter is 500. Minimaal 20 m² inclusief overspan.</p>';
+  h+='</div><p class="thc-hint">Binnenmaat in hele centimeters, dus 5 meter is 500. Wij tellen er per zijde 25 cm overspan bij (de afdekking rust op de rand). Minimaal 20 m² inclusief overspan.</p>';
   h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
      '<span>Oppervlakte incl. overspan <b>'+m2echt().toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(m2echt()<20?'<small>Kleiner dan 20 m²: we rekenen met het minimum van 20 m².</small>':'')+(p===null?'':'<span>Prijsindicatie <b>'+eur(Math.round(p))+'</b></span><small>'+e(S.uitvoering)+', incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten</small>'))+'</div>';
   return h+'</fieldset>';
@@ -495,7 +495,8 @@ function render(){
       rij(ADVIES,'oproller',{sub:'Een specialist adviseert je'})+'</div></fieldset>';
   if(st.contact) h+=formulier()+'<ul class="thc-usp thc-gerust"><li>Gratis en vrijblijvend</li><li>Persoonlijk voorstel op maat</li></ul>';
   h+='</section></div>';
-  var kz=[S.uitvoering,S.vorm,S.kleur!==ADVIES?S.kleur:''].filter(Boolean).join(' · ');
+  // alleen tonen wat de bezoeker zelf koos of al bevestigde (stap voorbij), niet de standaardwaarden
+  var kz=[['uitvoering',0],['vorm',1],['kleur',2]].filter(function(x){ return (aangeklikt[x[0]]||verst>x[1])&&S[x[0]]!==ADVIES; }).map(function(x){ return S[x[0]]; }).join(' · ')||'nog niets gekozen';
   h+='<div class="thc-foot">'+(stap>0?'<button type="button" class="thc-btn thc-back" data-a="terug">Vorige</button>':'')+
      (st.contact?'<div class="thc-keuze"><b>Gratis en vrijblijvend</b> · persoonlijk voorstel op maat</div>':'<div class="thc-keuze"><b>Jouw keuze:</b> '+e(kz)+'</div>')+
      (APP?'<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(prijsPm(),true)+' p/m²</b>':'indicatie<b>'+eur(Math.round(p))+'</b>')+'</div>':'')+
@@ -569,7 +570,7 @@ function verstuur(){
 root.addEventListener('click',function(ev){
   var o=ev.target.closest('.thc-row,.thc-card');
   if(o){ lees(); var k=o.getAttribute('data-k'), val=o.getAttribute('data-v');
-    S[k]=val; laatst=val; if(k==='vorm'){ fout={}; } render(); return; }
+    S[k]=val; aangeklikt[k]=1; laatst=val; if(k==='vorm'){ fout={}; } render(); return; }
   var g=ev.target.closest('[data-ga]'); if(g&&!g.disabled) return ga(+g.getAttribute('data-ga'));
   var a=ev.target.closest('[data-a]'); if(!a) return;
   if(a.getAttribute('data-a')==='sluiten') return sluit();

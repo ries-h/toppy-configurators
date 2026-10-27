@@ -327,7 +327,7 @@ var ALLE = [
   {id:'overzicht', kort:'Overzicht', titel:'Ontvang je persoonlijke voorstel', lead:'Een zwembadspecialist van Toppy bekijkt je keuzes en stuurt je een voorstel op maat.', contact:true}
 ];
 function stappen(){ return ALLE.filter(function(s){ return s.id!=='oprollen'||S.situatie==='Compleet lamellendek'; }); }
-var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false;
+var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false, aangeklikt={};
 var root=document.getElementById('toppy-lc');
 var APP=root.hasAttribute('data-pagina'), IFRAME=window.parent!==window;
 if(APP) root.className='thc-app';
@@ -553,7 +553,9 @@ function render(){
   if(!INSTELLINGEN.verzenden) h+='<div class="thc-test"><b>Testmodus:</b> aanvragen worden nog niet verstuurd.</div>';
   h+='<nav class="thc-steps" aria-label="Stappen">'+ST.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
   h+='<div class="thc-main">'+podium()+'<section class="thc-panel"><h2>'+st.titel+'</h2><p class="thc-lead">'+st.lead+'</p>'+inhoud(st.id)+'</section></div>';
-  var kz=[S.situatie==='Vervanglamellen'?'Vervanglamellen':'',S.type,S.kleur!==ADVIES?S.kleur:'',m2()!==null?m2().toLocaleString('nl-NL',{maximumFractionDigits:1})+' m²':''].filter(Boolean).join(' · ');
+  // alleen tonen wat de bezoeker zelf koos of al bevestigde (stap voorbij), niet de standaardwaarden
+  var ids=stappen().map(function(s){return s.id;}), ok=function(k,id){ return aangeklikt[k]||verst>ids.indexOf(id); };
+  var kz=[S.situatie==='Vervanglamellen'&&ok('situatie','situatie')?'Vervanglamellen':'',ok('type','lamellen')?S.type:'',S.kleur!==ADVIES&&ok('kleur','kleur')?S.kleur:'',m2()!==null?m2().toLocaleString('nl-NL',{maximumFractionDigits:1})+' m²':''].filter(Boolean).join(' · ')||'nog niets gekozen';
   h+='<div class="thc-foot">'+(stap>0?'<button type="button" class="thc-btn thc-back" data-a="terug">Vorige</button>':'')+
      (st.contact?'<div class="thc-keuze"><b>Gratis en vrijblijvend</b> · persoonlijk voorstel op maat</div>':'<div class="thc-keuze"><b>Jouw keuze:</b> '+e(kz)+'</div>')+
      '<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(pm2()||vanafAlles(),true)+' p/m²</b>':(oprollerOnbekend()?'vanaf, excl. oproller':'indicatie vanaf')+'<b>'+eur(Math.round(p))+'</b>')+'</div>'+
@@ -641,7 +643,7 @@ root.addEventListener('click',function(ev){
   var o=ev.target.closest('.thc-row,.thc-card');
   if(o){ lees(); var k=o.getAttribute('data-k'), val=o.getAttribute('data-v');
     if(o.hasAttribute('data-check')) S[k]=!S[k];
-    else { S[k]=val; laatst=val; }
+    else { S[k]=val; aangeklikt[k]=1; laatst=val; }
     if(k==='type'&&kleuren().indexOf(S.kleur)<0) S.kleur=kleuren()[0];
     if(k==='situatie'&&nieuw()) S.afvoeren=false;
     if(k==='situatie'||k==='merk') fout={};
