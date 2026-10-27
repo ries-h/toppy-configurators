@@ -254,10 +254,10 @@ var INSTELLINGEN = {
       kleuren: { "Grijs": 69.95, "Wit": 69.95 } }
   },
   // Oprollers (alleen bij een compleet lamellendek met bovengronds systeem), vanaf-prijs incl. btw.
-  oprollers: { "Open Manu": 1495, "Open Classic": 2645, "AQS Automatisch oprolsysteem": 2895, "Tixit": 2995, "Open Aero": 3105,
+  // AQS: prijs van de productpagina (toppy.nl/product/22812, Ries 2026-10-27), niet die van het oude formulier.
+  oprollers: { "Open Manu": 1495, "Open Classic": 2645, "AQS Automatisch oprolsysteem": 3295, "Tixit": 2995, "Open Aero": 3105,
     "Contura": 3395, "Open Banc Classic": 4995, "Open Banc Classic Houtkleur": 5599, "Banc Design": 6995 },
-  installatie: 400,     // "Inclusief installatie - vanaf € 400"
-  inmeten: 150,         // "+ Inmeten van het zwembad - vanaf € 150"
+  installatie: 400,     // "Inclusief installatie - vanaf € 400". Inmeten is altijd gratis (Ries, 2026-10-27).
   afvoeren: 150,        // "+ Afvoeren oude lamellen - vanaf € 150"
   // Foto's staan in de map lamellendek/ van deze repo: sfeerfoto's van de lamellenpagina (DAM/CMS),
   // kleuren van de productpagina's op toppy.nl, oprollers van de productpagina's (Tixit, Contura) en van
@@ -296,7 +296,7 @@ var INSTELLINGEN = {
   usps: [
     "Klanten geven ons een 9/10",
     "Gratis levering binnen NL/BE",
-    "Inmeten en installatie via onze partners",
+    "Gratis inmeten door onze partners",
     "Showroom in Spijk (bij Gorinchem)"
   ],
   // Labels om te sturen, bijv. {"Solar polycarbonaat": {"tekst": "Aanbevolen", "kleur": "groen"}}. Kleuren: geel, groen, donker.
@@ -356,7 +356,6 @@ var JW = {
     "Banc Design": "Banc Design | vanaf €6.995,-|" + JF + "banc_d_sign_produit.62419d895151b5.61575061.jpg" },
   installatie: { zelf: "Ik installeer alles zelf, met jullie hulp op afstand|" + JF + "Montage.65783d61c45438.61938811.webp",
     partner: "Inclusief installatie - vanaf €400,-|" + JF + "Icoon-Servicemonteur.65783d6ac69ef5.06693682.jpg",
-    inmeten: "+ Inmeten van het zwembad - vanaf €150,-|" + JF + "4182524-meetlint-lineaire-pictogram-dunne-lijn-illustratie-contour-symbool-geisoleerd-omtrek-tekening-vector.65783d88816697.47544057.jpg",
     afvoeren: "+ Afvoeren oude lamellen - vanaf €150,-|" + JF + "pictogram-bord-afvalbak-wit.65783daa843258.37460983.png" }
 };
 
@@ -367,7 +366,7 @@ var VORMEN = ['Geen trap', 'Romeinse trap', 'Uitwendige trap', 'Romeinse trap, l
 var SYSTEMEN = ['Bovengronds systeem', 'Onderwater buismotor'];
 
 var S = {situatie:'Compleet lamellendek', merk:'', type:'Solar polycarbonaat', kleur:'Blauw', vorm:'Geen trap', lengte:'', breedte:'',
-  systeem:'Bovengronds systeem', oproller:'Open Manu', installatie:'zelf', inmeten:false, afvoeren:false,
+  systeem:'Bovengronds systeem', oproller:'Open Manu', installatie:'zelf', afvoeren:false,
   voornaam:'', achternaam:'', email:'', tel:'', straat:'', postcode:'', plaats:'', land:'Nederland', wensen:''};
 var ALLE = [
   {id:'situatie', kort:'Situatie', titel:'Wat zoek je?', lead:'Een compleet lamellendek voor je zwembad, of nieuwe lamellen voor je bestaande oproller.'},
@@ -375,7 +374,7 @@ var ALLE = [
   {id:'kleur', kort:'Kleur', titel:'Kies je kleur', lead:'De prijs per m² hangt af van de kleur. Twijfel je? Bestel de sample kit.'},
   {id:'zwembad', kort:'Zwembad', titel:'Vorm en maten van je zwembad', lead:'Vul de binnenmaat in. Wij controleren de exacte maat altijd nog samen met je, voordat je bestelt.'},
   {id:'oprollen', kort:'Oprollen', titel:'Hoe wil je oprollen?', lead:'Een bovengronds systeem past alleen bij een volledig ingegraven zwembad. Voor een onderwater buismotor is een nis in het zwembad nodig.'},
-  {id:'installatie', kort:'Installatie', titel:'Installatie', lead:'Zelf installeren of door een van onze partners. Inmeten en installeren regelen we volledig via onze betrouwbare partners.'},
+  {id:'installatie', kort:'Installatie', titel:'Installatie', lead:'Zelf installeren of door een van onze partners. Inmeten is altijd gratis, dat regelen we via onze betrouwbare partners.'},
   {id:'overzicht', kort:'Overzicht', titel:'Ontvang je persoonlijke voorstel', lead:'Een zwembadspecialist van Toppy bekijkt je keuzes en stuurt je een voorstel op maat.', contact:true}
 ];
 function stappen(){ return ALLE.filter(function(s){ return s.id!=='oprollen'||S.situatie==='Compleet lamellendek'; }); }
@@ -414,7 +413,7 @@ function getal(x){ var n=parseInt(String(x).replace(/\D/g,''),10); return isNaN(
 function maatOk(){ var l=getal(S.lengte), b=getal(S.breedte); return l!==null&&b!==null&&l>=100&&b>=100&&l<=5000&&b<=2500; }
 function m2(){ return maatOk()?getal(S.lengte)*getal(S.breedte)/10000:null; }
 function oprollerPrijs(){ return nieuw()&&S.systeem==='Bovengronds systeem'?(INSTELLINGEN.oprollers[S.oproller]||0):0; }
-function installatiePrijs(){ return (S.installatie==='partner'?INSTELLINGEN.installatie:0)+(S.inmeten?INSTELLINGEN.inmeten:0)+(S.afvoeren&&!nieuw()?INSTELLINGEN.afvoeren:0); }
+function installatiePrijs(){ return (S.installatie==='partner'?INSTELLINGEN.installatie:0)+(S.afvoeren&&!nieuw()?INSTELLINGEN.afvoeren:0); }
 // buismotor of advies: geen vanaf-prijs bekend (het oude formulier had er geen), dus niet als € 0 tellen
 function oprollerOnbekend(){ return nieuw()&&(S.systeem!=='Bovengronds systeem'||!INSTELLINGEN.oprollers[S.oproller]); }
 function excl(){ return oprollerOnbekend()?', excl. oproller':''; }
@@ -509,7 +508,7 @@ function usps(){ var u=(INSTELLINGEN.usps||[]).filter(function(x){return x&&Stri
 function maatTekst(){ return maatOk()?'Lengte '+getal(S.lengte)+' cm (incl. trap), breedte '+getal(S.breedte)+' cm':'Nog niet ingevuld'; }
 function oprolTekst(){ if(!nieuw()) return 'Bestaande oproller'+(S.merk?' ('+S.merk+')':''); if(S.systeem!=='Bovengronds systeem') return S.systeem+' (prijs volgt in je voorstel)'; return S.systeem+': '+S.oproller+(INSTELLINGEN.oprollers[S.oproller]?' (vanaf '+eur(INSTELLINGEN.oprollers[S.oproller])+')':''); }
 function instTekst(){ var r=[S.installatie==='partner'?'Inclusief installatie (vanaf '+eur(INSTELLINGEN.installatie)+')':'Zelf installeren, met hulp op afstand'];
-  if(S.inmeten) r.push('inmeten (vanaf '+eur(INSTELLINGEN.inmeten)+')'); if(S.afvoeren&&!nieuw()) r.push('afvoeren oude lamellen (vanaf '+eur(INSTELLINGEN.afvoeren)+')'); return r.join(' + '); }
+  r.push('gratis inmeten'); if(S.afvoeren&&!nieuw()) r.push('afvoeren oude lamellen (vanaf '+eur(INSTELLINGEN.afvoeren)+')'); return r.join(' + '); }
 function lamelTekst(){ var p=pm2(); return S.type+', '+(S.kleur===ADVIES?'kleur nog niet gekozen':S.kleur)+(p!==null?' (vanaf '+eur(p,true)+' per m²)':''); }
 function blokken(){
   var m=m2(), p=indicatie();
@@ -577,9 +576,9 @@ function inhoud(id){
     h+='<fieldset class="thc-q"><legend>Wie installeert?</legend><div class="thc-list">'+
       rij('installatie','zelf',{naam:'Ik installeer zelf',sub:'Met onze hulp op afstand'})+
       rij('installatie','partner',{naam:'Inclusief installatie',sub:'Door een van onze partners',prijs:[eur(INSTELLINGEN.installatie),'vanaf']})+'</div></fieldset>'+
-      '<fieldset class="thc-q"><legend>Extra <small>meerdere keuzes mogelijk</small></legend><div class="thc-list">'+
-      rij('inmeten','1',{check:true,naam:'Inmeten van het zwembad',sub:'Een partner meet je zwembad precies in',prijs:[eur(INSTELLINGEN.inmeten),'vanaf']})+
-      (nieuw()?'':rij('afvoeren','1',{check:true,naam:'Afvoeren oude lamellen',sub:'Wij nemen je oude lamellen mee',prijs:[eur(INSTELLINGEN.afvoeren),'vanaf']}))+'</div></fieldset>';
+      (nieuw()?'':'<fieldset class="thc-q"><legend>Extra</legend><div class="thc-list">'+
+      rij('afvoeren','1',{check:true,naam:'Afvoeren oude lamellen',sub:'Wij nemen je oude lamellen mee',prijs:[eur(INSTELLINGEN.afvoeren),'vanaf']})+'</div></fieldset>')+
+      '<div class="thc-tip"><b>Inmeten is altijd gratis.</b> Een partner meet je zwembad precies in, voordat je bestelt. Alleen het plaatsen kost iets.</div>';
   }
   if(id==='overzicht') h+=formulier()+'<ul class="thc-usp thc-gerust"><li>Gratis en vrijblijvend</li><li>Persoonlijk voorstel op maat</li></ul>';
   return h;
@@ -639,9 +638,11 @@ function velden(){
   var mat=pol?JW.materiaal.Polycarbonaat:JW.materiaal.PVC; zet('q132_ltspanStylefontsize[]','q142_vanWelke',mat,schoon(mat));
   if(pol) zet('q135_welkKwaliteitsniveau','q143_welkeKwaliteitsniveau',JW.kwaliteit[S.type]);
   var kw=kl[S.kleur]||JW.kleurAdvies; zet(kl.veld,kl.con,kw,schoon(kw));
-  if(nieuw()&&S.systeem==='Bovengronds systeem'){ var op=JW.oproller[S.oproller]||JW.kleurAdvies; zet('q45_vanWelke45[]','q147_vanWelke147',op,schoon(op)); }
+  if(nieuw()&&S.systeem==='Bovengronds systeem'){ var op=JW.oproller[S.oproller]||JW.kleurAdvies, opp=INSTELLINGEN.oprollers[S.oproller];
+    // connectieveld met de actuele prijs (het JotForm-antwoord zelf moet letterlijk de oude optie blijven)
+    zet('q45_vanWelke45[]','q147_vanWelke147',op,opp?S.oproller+' | vanaf '+eur(opp):schoon(op)); }
   // installatie: meerkeuze, dus elke keuze als eigen waarde met dezelfde naam (zie verstuur)
-  var inst=[JW.installatie[S.installatie]]; if(S.inmeten) inst.push(JW.installatie.inmeten); if(S.afvoeren&&!nieuw()) inst.push(JW.installatie.afvoeren);
+  var inst=[JW.installatie[S.installatie]]; if(S.afvoeren&&!nieuw()) inst.push(JW.installatie.afvoeren);
   v['q134_installatie[]']=inst; v['q148_installatieconnectie']=inst.map(schoon).join('\n');
   zet('q61_watIs61','q149_watIs',String(getal(S.lengte)||''));
   zet('q62_watIs62','q150_watIs150',String(getal(S.breedte)||''));
