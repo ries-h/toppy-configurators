@@ -260,7 +260,8 @@ var INSTELLINGEN = {
   inmeten: 150,         // "+ Inmeten van het zwembad - vanaf € 150"
   afvoeren: 150,        // "+ Afvoeren oude lamellen - vanaf € 150"
   // Foto's staan in de map lamellendek/ van deze repo: sfeerfoto's van de lamellenpagina (DAM/CMS),
-  // kleuren van de productpagina's op toppy.nl, oprollers (alleen als icoontje) uit het oude JotForm.
+  // kleuren van de productpagina's op toppy.nl, oprollers van de productpagina's (Tixit, Contura) en van
+  // fabrikant Abriblue (Open- en Banc-modellen). AQS = witte oproller uit de DAM (728b2ce8). [CHECK: is dat de AQS?]
   // Een betere foto? Zet hem in lamellendek/ en pas hier de bestandsnaam aan.
   afbeeldingen: {
     "Compleet lamellendek": "lamellendek/situatie-nieuw.webp",
@@ -496,7 +497,7 @@ function podium(){
   else if(id==='lamellen'){ v=laatst&&INSTELLINGEN.lamellen[laatst]?laatst:S.type; u=img(v); extra=vergelijking(); }
   else if(id==='kleur'){ v=S.kleur; adv=v===ADVIES; u=img(S.type+'|'+v); wit=!!u; if(!u) u=img(S.type); }
   else if(id==='zwembad'){ v=S.vorm; adv=v==='Andere vorm'; sv=vormSvg(v,true); uitleg=adv?'':'L is de lengte inclusief een eventuele trap, B is de breedte. De lamellen rollen op in de lengte.'; }
-  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.systeem; u=img(v); } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je zwembad en je nis.'; } }
+  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.oproller!==ADVIES&&img(S.oproller)?S.oproller:S.systeem; u=img(v); } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je zwembad en je nis.'; } }
   else if(id==='installatie'){ v='Installatie'; u=img('Installatie')||img(S.type); uitleg='Kies je voor zelf installeren? Dan helpen we je op afstand. Is er een kraan nodig, dan regelen we die op aanvraag (tegen betaling).'; }
   else { v=''; u=img('Overzicht')||img(S.type); }
   var vt=id==='zwembad'?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, een specialist adviseert je persoonlijk';
@@ -569,7 +570,7 @@ function inhoud(id){
       rij('systeem','Onderwater buismotor',{sub:'Er moet een nis in het zwembad zitten. Prijs volgt in je voorstel'})+
       rij('systeem',ADVIES,{adv:true,sub:'Een specialist adviseert je'})+'</div></fieldset>';
     if(S.systeem==='Onderwater buismotor') h+='<div class="thc-tip"><b>Lastig vooraf uit te rekenen.</b> Een buismotor is echt maatwerk: de prijs hangt af van je zwembad en de nis. Daarom zit hij nog niet in de prijsindicatie. Een zwembadspecialist rekent hem voor je uit in je persoonlijke voorstel.</div>';
-    if(S.systeem==='Bovengronds systeem') h+='<fieldset class="thc-q"><legend>Oproller</legend><div class="thc-list">'+Object.keys(INSTELLINGEN.oprollers).map(function(o){return rij('oproller',o,{prijs:[eur(INSTELLINGEN.oprollers[o]),'vanaf']});}).join('')+
+    if(S.systeem==='Bovengronds systeem') h+='<fieldset class="thc-q"><legend>Oproller</legend><div class="thc-list">'+Object.keys(INSTELLINGEN.oprollers).map(function(o){return rij('oproller',o,{foto:true,prijs:[eur(INSTELLINGEN.oprollers[o]),'vanaf']});}).join('')+
       rij('oproller',ADVIES,{adv:true,sub:'Wat een keuze! Een specialist adviseert je persoonlijk'})+'</div></fieldset>';
   }
   if(id==='installatie'){
