@@ -2,12 +2,30 @@
 
 Losse configuratorpagina's voor toppy.nl, gehost via GitHub Pages.
 
+- `winterzeil.html`: configurator winterzeil op maat (type Budget/Basis/Deluxe, vorm en
+  maten, kleur, bevestiging, gegevens). Rekent zoals configurator 1028 op toppy.nl en stuurt de
+  aanvraag naar JotForm "Offerte aanvragen winterzeil" (262952653525362).
+- `winternet.html`: configurator winternet op maat (type Budget/Basis/Deluxe, vorm en maten,
+  kleur, bevestiging, gegevens). Rekent zoals configurator 1712 op toppy.nl en stuurt de aanvraag
+  voorlopig naar hetzelfde JotForm als het winterzeil (type "Winternet" in de samenstelling).
+  Typefoto's: `winternet-budget.jpeg`, `winternet-basis.jpeg`, `winternet-deluxe.jpeg` in de root.
+- `popup.js`: opent alle configurators als venster over een toppy.nl-pagina.
 - `stavenafdekking.html`: configurator stavenafdekking (uitvoering, vorm en maten,
   kleur, oprollen, gegevens). Rekent een prijsindicatie zoals de configurator op
   toppy.nl en stuurt de aanvraag naar JotForm "Offerte aanvragen stavenafdekking".
 
-Op toppy.nl: plak het blok `configurator-modal.html` (in de kennisbank) op de pagina; elke
-knop met `data-open-offerte` of `data-open-configurator` opent dan de pop-up. Losse iframe kan ook:
+Op toppy.nl (pop-up over de pagina): zet in het hero-blok één regel
+
+```html
+<script src="https://ries-h.github.io/toppy-configurators/popup.js" defer></script>
+```
+
+en laat de knop linken naar `https://ries-h.github.io/toppy-configurators/stavenafdekking.html`
+of `https://ries-h.github.io/toppy-configurators/winterzeil.html`
+of `https://ries-h.github.io/toppy-configurators/winternet.html`.
+`popup.js` vangt elke link naar die pagina (en elke knop met `data-open-offerte` of
+`data-open-configurator`) af en opent de configurator in een venster over de pagina. Zonder
+het script opent de link gewoon de losse pagina. Losse iframe kan ook:
 
 ```html
 <iframe src="https://ries-h.github.io/toppy-configurators/stavenafdekking.html"
