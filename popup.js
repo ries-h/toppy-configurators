@@ -1,5 +1,5 @@
 /*
-  Pop-up voor de configurators op toppy.nl (stavenafdekking, winterzeil, winternet). Versie 2026-10-26.
+  Pop-up voor de configurators op toppy.nl (stavenafdekking, winterzeil, winternet). Versie 2026-10-27.
   Gebruik: zet in het hero-blok één regel
     <script src="https://ries-h.github.io/toppy-configurators/popup.js" defer></script>
   Elke link naar een configurator in https://ries-h.github.io/toppy-configurators/
@@ -7,6 +7,9 @@
   Knoppen met data-open-offerte / data-open-configurator openen de stavenafdekking.
   Zonder dit script (of zonder JavaScript) opent dezelfde link de configurator als losse pagina.
   Sluiten: kruisje in de configurator, Esc, of naast het venster klikken.
+  Meten (2026-10-27): na een verzonden aanvraag gaat de pagina naar /bedankt-offerte-aanvraag, waar
+  Tag Manager de offerte-conversie al telt. De herkomst (gclid, utm-tags, landingspagina) gaat via de
+  url mee naar de configurator en komt zo in JotForm en Freshdesk.
 */
 (function () {
     var d = document, root = d.documentElement;
@@ -21,6 +24,7 @@
         'winterzeil.html': ['Stel je winterzeil samen', 'toppy-winter-configurator', 'winter_configurator'],
         'winternet.html': ['Stel je winternet samen', 'toppy-winternet-configurator', 'winternet_configurator']
     };
+    var BEDANKT = 'https://www.toppy.nl/bedankt-offerte-aanvraag?configurator=';
     var KNOP = '[data-open-offerte],[data-open-configurator]';
     for (var b in CONFIGURATORS) KNOP += ',a[href^="' + MAP + b + '"]';
 
@@ -36,6 +40,33 @@
         '.tp-stavenpop .tp-stavenpop__x:focus-visible{outline:3px solid #35acf8;outline-offset:2px}' +
         'html.tp-stavenpop-open{overflow:hidden}' +
         '@media (max-width:600px){.tp-stavenpop{padding:0}.tp-stavenpop .tp-stavenpop__venster{width:100%;height:100%;border-radius:0}}';
+
+    /* herkomst van de bezoeker: klik-id's en utm-tags uit de url. Bewaard (90 dagen, laatste klik
+       wint), zodat ze ook meegaan als iemand via een advertentie binnenkomt en daarna doorklikt. */
+    var SLEUTELS = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    function koekje(naam) { var m = d.cookie.match(new RegExp('(?:^|; )' + naam + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : ''; }
+    function herkomst() {
+        var h = {}, nieuw = false, opslag = null, q;
+        try { q = new URLSearchParams(location.search); } catch (x) { q = null; }
+        if (q) SLEUTELS.forEach(function (k) { var w = q.get(k); if (w) { h[k] = w; nieuw = true; } });
+        try {
+            if (nieuw) {
+                h.landing = location.href.split('#')[0];
+                if (d.referrer) h.referrer = d.referrer;
+                localStorage.setItem('tp_herkomst', JSON.stringify({ t: Date.now(), h: h }));
+            } else {
+                opslag = JSON.parse(localStorage.getItem('tp_herkomst') || 'null');
+                if (opslag && Date.now() - opslag.t < 90 * 864e5) h = opslag.h;
+            }
+        } catch (x) { /* geen opslag (privévenster): dan alleen wat er nu in de url staat */ }
+        /* geen gclid/fbclid in url of opslag? De cookies van Google en Meta hebben hem soms nog */
+        if (!h.gclid) { var g = koekje('_gcl_aw').split('.'); if (g.length > 2) h.gclid = g.slice(2).join('.'); }
+        if (!h.fbclid) { var fb = koekje('_fbc').split('.'); if (fb.length > 3) h.fbclid = fb.slice(3).join('.'); }
+        h.pagina = location.href.split('#')[0];
+        var uit = [];
+        for (var k in h) if (h[k]) uit.push(encodeURIComponent(k) + '=' + encodeURIComponent(String(h[k]).slice(0, 500)));
+        return uit.length ? '?' + uit.join('&') : '';
+    }
 
     var pop = null, venster = null, terug = null, nu = null;
 
@@ -58,7 +89,7 @@
             var l = d.createElement('p'); l.className = 'tp-stavenpop__laadt'; l.textContent = 'Configurator laden…';
             venster.appendChild(l);
             f = d.createElement('iframe');
-            f.src = MAP + bestand;
+            f.src = MAP + bestand + herkomst();
             f.title = CONFIGURATORS[bestand][0];
             f.setAttribute('data-bestand', bestand);
             f.onload = function () { if (l.parentNode) l.parentNode.removeChild(l); };
@@ -109,6 +140,12 @@
         if (!bestand) return;
         if (m.type === 'geladen') { var f = venster.querySelector('iframe[data-bestand="' + bestand + '"]'); if (f) f.setAttribute('data-geladen', ''); if (bestand === nu) pop.classList.add('is-geladen'); }
         if (m.type === 'sluiten') sluit();
-        if (m.type === 'verzonden') (window.dataLayer = window.dataLayer || []).push({ event: CONFIGURATORS[bestand][2] + '_aanvraag', uitvoering: m.uitvoering });
+        if (m.type === 'verzonden') {
+            (window.dataLayer = window.dataLayer || []).push({ event: CONFIGURATORS[bestand][2] + '_aanvraag', uitvoering: m.uitvoering });
+            /* naar de bedankpagina: daar telt Tag Manager de offerte-conversie (GA4, Meta, Google Ads).
+               Kort wachten, zodat de bezoeker het bedankscherm ziet en de tag hierboven kan afgaan. */
+            var slug = bestand.replace('.html', '');
+            setTimeout(function () { location.href = BEDANKT + slug; }, 1500);
+        }
     });
 })();

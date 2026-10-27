@@ -236,6 +236,9 @@ var INSTELLINGEN = {
   // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
   // Aanvragen gaan naar JotForm 262952653525362 (Offerte aanvragen winternet).
   verzenden: true,
+  // Verborgen JotForm-veld "Herkomst" (gclid, utm, pagina) voor Freshdesk, bijv. 'q31_herkomst'.
+  // Leeg = de herkomst staat alleen onderaan "Samenstelling configurator" (q18).
+  herkomstVeld: '',
   // Prijs per m² incl. btw (configurator /category/1712). Gewijzigd? Pas hier aan.
   prijzen: { "Budget": 13.95, "Basis": 16.95, "Deluxe": 23.95 },
   vast: 50,             // "Productiekosten" per bestelling
@@ -320,6 +323,17 @@ if(APP&&!IFRAME) document.documentElement.classList.add('thc-los');
 // sluiten: in de pop-up meldt de pagina het aan de modal, als losse pagina terug naar waar je vandaan kwam (of de categorie)
 function sluit(){ if(IFRAME) return meld('sluiten'); if(document.referrer&&history.length>1) history.back(); else location.href='https://www.toppy.nl/category/1712/zwembad/afdekzeil-zwembad/winterzeil-zwembad/winternet-op-maat.html'; }
 function meld(type,extra){ if(!IFRAME) return; var d={bron:'toppy-winternet-configurator',type:type}; for(var k in extra||{}) d[k]=extra[k]; try{ window.parent.postMessage(d,'*'); }catch(x){} }
+/* ---------- herkomst voor Freshdesk en doorsturen naar de bedankpagina (2026-10-27) ---------- */
+// popup.js geeft gclid, utm-tags en de pagina mee in de url van de configurator. Losse pagina:
+// alleen wat er in de eigen url staat, plus de verwijzende pagina.
+var HERKOMST=(function(){ var h={}, q;
+  try{ q=new URLSearchParams(location.search); }catch(x){ return h; }
+  ['gclid','gbraid','wbraid','fbclid','msclkid','utm_source','utm_medium','utm_campaign','utm_term','utm_content','landing','pagina','referrer'].forEach(function(k){ var w=q.get(k); if(w) h[k]=w.slice(0,500); });
+  if(!IFRAME&&!h.pagina&&document.referrer) h.pagina=document.referrer.slice(0,500);
+  return h; })();
+function herkomstTekst(){ var r=[]; for(var k in HERKOMST) r.push(k+': '+HERKOMST[k]); return r.length?r.join('\n'):'Onbekend (direct bezoek)'; }
+// bestaande trigger in Tag Manager: url met "bedankt-offerte-aanvraag" telt als offerte-conversie
+var BEDANKT='https://www.toppy.nl/bedankt-offerte-aanvraag?configurator=winternet';
 
 function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function eur(n,dec){return '€ '+n.toLocaleString('nl-NL',{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});}
@@ -521,7 +535,8 @@ function velden(){
     'SAMENSTELLING VIA CONFIGURATOR','Type: Winternet '+S.uitvoering+' ('+eur(prijsPm(),true)+' per m²)','Vorm: '+S.vorm,'Binnenmaat: '+maatTekst(),
     'Oppervlakte incl. overspan: '+(m===null?'onbekend':opp()),'Kleur: '+S.kleur,'Bevestiging: '+S.bevestiging+(ankerPm()?' (+ '+eur(ankerPm(),true)+' per m²)':''),
     'Prijsindicatie: '+(p===null?'n.v.t.':eur(Math.round(p))+' incl. btw en € '+INSTELLINGEN.vast+' productiekosten')];
-  v['q18_samenstellingConfigurator']=sam.join('\n');
+  v['q18_samenstellingConfigurator']=sam.concat(['','HERKOMST',herkomstTekst()]).join('\n');
+  if(INSTELLINGEN.herkomstVeld) v[INSTELLINGEN.herkomstVeld]=herkomstTekst();
   v['q16_q16_textarea14']=S.wensen;
   v['q19_email']=S.email; // verborgen E-mailveld: voor "Antwoord-aan" in de melding aan klantenservice
   v['q20_naam']=naam; // Naam-veld: "Requester Name" in de Freshdesk-integratie
@@ -548,8 +563,13 @@ function verstuur(){
   var f=document.createElement('form'); f.method='post'; f.action=FORM_URL; f.target=naam; f.acceptCharset='utf-8'; f.style.display='none';
   Object.keys(v).forEach(function(k){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v[k]; f.appendChild(i); });
   document.body.appendChild(f);
-  var af=function(){ if(klaar) return; bezig=false; klaar=true; render(); if(window.dataLayer) window.dataLayer.push({event:'winternet_configurator_aanvraag', uitvoering:S.uitvoering}); meld('verzonden',{uitvoering:S.uitvoering}); };
-  fr.onload=af; setTimeout(af,6000);
+  // echt=true: JotForm heeft geantwoord. Na 15 s zonder antwoord tonen we wel het bedankscherm,
+  // maar tellen we geen conversie (voorheen telde ook een time-out na 6 s mee).
+  var af=function(echt){ if(klaar) return; bezig=false; klaar=true; render(); if(!echt) return;
+    if(window.dataLayer) window.dataLayer.push({event:'winternet_configurator_aanvraag', uitvoering:S.uitvoering}); meld('verzonden',{uitvoering:S.uitvoering});
+    // in de pop-up stuurt popup.js de pagina door; losse pagina: zelf doorsturen
+    if(!IFRAME) setTimeout(function(){ location.href=BEDANKT; },1500); };
+  fr.onload=function(){ af(true); }; setTimeout(function(){ af(false); },15000);
   f.submit();
 }
 
