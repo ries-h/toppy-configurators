@@ -1,9 +1,9 @@
 /*
-  Pop-up voor de configurators op toppy.nl (stavenafdekking, winterzeil, winternet). Versie 2026-10-27.
+  Pop-up voor de configurators op toppy.nl (stavenafdekking, winterzeil, winternet, lamellendek). Versie 2026-10-27.
   Gebruik: zet in het hero-blok één regel
     <script src="https://ries-h.github.io/toppy-configurators/popup.js" defer></script>
   Elke link naar een configurator in https://ries-h.github.io/toppy-configurators/
-  (stavenafdekking.html, winterzeil.html, winternet.html) opent dan als venster over de pagina.
+  (stavenafdekking.html, winterzeil.html, winternet.html, lamellendek.html) opent dan als venster over de pagina.
   Knoppen met data-open-offerte / data-open-configurator openen de stavenafdekking.
   Zonder dit script (of zonder JavaScript) opent dezelfde link de configurator als losse pagina.
   Sluiten: kruisje in de configurator, Esc, of naast het venster klikken.
@@ -22,7 +22,8 @@
     var CONFIGURATORS = {
         'stavenafdekking.html': ['Stel je stavenafdekking samen', 'toppy-staven-configurator', 'staven_configurator'],
         'winterzeil.html': ['Stel je winterzeil samen', 'toppy-winter-configurator', 'winter_configurator'],
-        'winternet.html': ['Stel je winternet samen', 'toppy-winternet-configurator', 'winternet_configurator']
+        'winternet.html': ['Stel je winternet samen', 'toppy-winternet-configurator', 'winternet_configurator'],
+        'lamellendek.html': ['Stel je lamellendek samen', 'toppy-lamellen-configurator', 'lamellen_configurator']
     };
     var BEDANKT = 'https://www.toppy.nl/bedankt-offerte-aanvraag?configurator=';
     var KNOP = '[data-open-offerte],[data-open-configurator]';

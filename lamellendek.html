@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Stel je lamellendek samen · Toppy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.toppy.nl/frontend/typpo/typpo-heavy.css">
+<style>html,body{margin:0;background:#fff;font-family:Poppins,Helvetica,Arial,system-ui,sans-serif;-webkit-text-size-adjust:100%}</style>
+</head><body>
+<!-- ============================================================
+     Toppy configurator lamellendek (2026-10-27)
+     Vervangt het JotForm "Aanvraag formulier lamellen" (223043516146347) als invulscherm,
+     maar stuurt de aanvraag naar datzelfde formulier, met dezelfde velden en de verborgen
+     "(connectie)"-velden. Zo blijven de JotForm-mails en het Freshdesk-ticket zoals ze waren.
+     Stappen: situatie (nieuw of vervangen), lamellen, kleur, zwembad, oprollen (alleen nieuw),
+     installatie, overzicht + gegevens.
+     Prijsindicatie: lengte x breedte (binnenmaat, lengte incl. trap) x vanaf-prijs per m² van de
+     gekozen kleur, plus de vanaf-prijs van oproller, installatie en extra's.
+     Handmatig aanpassen kan alleen in het blok "INSTELLINGEN".
+     ============================================================ -->
+<div id="toppy-lc" data-pagina></div>
+<style>
+#toppy-lc{--ink:#343e40;--ink2:#5f6768;--mute:#8b9091;--line:#e6e6e6;--soft:#f5f5f3;--soft2:#fafaf8;--y:#ffcb01;--y2:#fdd941;--ysoft:#fff8dc;--g:#12ac74;--blue:#35acf8;--red:#f3575e;
+  --head:Typpo,Poppins,Helvetica,Arial,system-ui,sans-serif;--r:.5rem;--r2:.875rem;--sh:0 8px 20px -6px rgba(0,0,0,.16);
+  color:var(--ink);font-family:inherit;line-height:1.5;max-width:1120px;margin:0 auto;position:relative}
+#toppy-lc *{box-sizing:border-box}
+#toppy-lc button,#toppy-lc input,#toppy-lc textarea,#toppy-lc select{font-family:inherit;color:inherit}
+#toppy-lc a{color:var(--blue)}
+#toppy-lc .thc-test{background:#fff8d6;border:1px solid var(--y);border-radius:var(--r);padding:8px 12px;font-size:13px;margin-bottom:10px}
+
+/* stappen */
+#toppy-lc .thc-steps{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r2) var(--r2) 0 0;background:#fff;overflow-x:auto;scrollbar-width:none;padding:0 8px}
+#toppy-lc .thc-steps::-webkit-scrollbar{display:none}
+#toppy-lc .thc-step{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px 12px 13px;border:0;background:none;font-size:14px;font-weight:500;color:var(--mute);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+#toppy-lc .thc-step i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--soft);color:var(--ink2)}
+#toppy-lc .thc-step.is-done{color:var(--ink)}
+#toppy-lc .thc-step.is-done i{background:var(--g);color:#fff}
+#toppy-lc .thc-step.is-now{color:var(--ink);font-weight:700;border-bottom-color:var(--y)}
+#toppy-lc .thc-step.is-now i{background:var(--y);color:var(--ink)}
+#toppy-lc .thc-step[disabled]{cursor:default}
+
+/* hoofdvlak */
+#toppy-lc .thc-main{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);border:1px solid var(--line);border-top:0;background:#fff}
+@media (max-width:900px){#toppy-lc .thc-main{grid-template-columns:minmax(0,1fr)}}
+#toppy-lc .thc-stage{margin:0;padding:28px;background:var(--soft2);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
+@media (max-width:900px){#toppy-lc .thc-stage{border-right:0;border-bottom:1px solid var(--line);padding:16px}}
+#toppy-lc .thc-pic{position:relative;aspect-ratio:4/3;border-radius:var(--r2);overflow:hidden;background:var(--soft);box-shadow:0 1px 0 var(--line)}
+#toppy-lc .thc-pic img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+#toppy-lc .thc-pic.thc-wit,#toppy-lc .thc-pic.thc-tek{background:#fff}
+#toppy-lc .thc-pic.thc-wit img{inset:12%;width:76%;height:76%;object-fit:contain}
+#toppy-lc .thc-pic.thc-tek svg{position:absolute;inset:7%;width:86%;height:86%;display:block}
+#toppy-lc .thc-vraag{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--soft);text-align:center;padding:20px}
+#toppy-lc .thc-vraag span{display:flex;align-items:center;justify-content:center;width:min(30%,150px);aspect-ratio:1;border-radius:50%;background:#fff;border:2px solid var(--line);font-size:clamp(44px,8vw,84px);font-weight:700;line-height:1}
+#toppy-lc .thc-vraag p{margin:0;font-size:15px;font-weight:600;color:var(--ink2);max-width:34ch}
+#toppy-lc .thc-pic figcaption{position:absolute;left:14px;bottom:14px;background:rgba(255,255,255,.95);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+#toppy-lc .thc-gekozen{display:none;position:absolute;left:0;right:0;bottom:0;flex-wrap:wrap;gap:4px 6px;padding:8px 10px}
+#toppy-lc .thc-gekozen span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;line-height:1.3;box-shadow:0 1px 4px rgba(0,0,0,.15);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#toppy-lc .thc-gekozen i{font-style:normal;font-weight:500;color:var(--ink2);margin-right:4px}
+#toppy-lc .thc-gekozen i::after{content:":"}
+#toppy-lc .thc-uitleg{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+#toppy-lc .thc-uitleg b{display:block;font-size:15px}
+#toppy-lc .thc-uitleg p{margin:4px 0 0;font-size:14px;color:var(--ink2)}
+#toppy-lc .thc-usp{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--ink2);margin:0;padding:0;list-style:none}
+#toppy-lc .thc-usp li::before{content:"\2713";color:var(--g);font-weight:800;margin-right:6px}
+/* vergelijking in het podium (stap lamellen) */
+#toppy-lc .thc-verg{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;font-size:13px}
+#toppy-lc .thc-verg table{width:100%;border-collapse:collapse}
+#toppy-lc .thc-verg th,#toppy-lc .thc-verg td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+#toppy-lc .thc-verg tr:last-child td{border-bottom:0}
+#toppy-lc .thc-verg thead th{font-weight:700;font-size:12px;color:var(--ink2);background:var(--soft2)}
+#toppy-lc .thc-verg td:first-child{color:var(--ink2);white-space:nowrap}
+#toppy-lc .thc-verg .is-aan{background:var(--ysoft);font-weight:700;color:var(--ink)}
+
+#toppy-lc .thc-panel{padding:32px 34px 36px;min-width:0}
+@media (max-width:900px){#toppy-lc .thc-panel{padding:22px 16px 28px}}
+#toppy-lc .thc-panel h2{font-family:var(--head);font-size:28px;font-weight:800;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em;text-wrap:balance}
+#toppy-lc .thc-lead{color:var(--ink2);margin:0 0 26px;font-size:15px;max-width:52ch}
+#toppy-lc .thc-q{border:0;margin:0 0 26px;padding:0;min-width:0}
+#toppy-lc .thc-q:last-child{margin-bottom:0}
+#toppy-lc .thc-q legend{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin:0 0 10px;padding:0}
+#toppy-lc .thc-q legend small{text-transform:none;letter-spacing:0;font-weight:400;color:var(--mute);margin-left:6px;font-size:12px}
+
+/* keuzerijen */
+#toppy-lc .thc-list{display:grid;gap:10px}
+#toppy-lc .thc-row{display:grid;grid-template-columns:76px minmax(0,1fr) auto 24px;align-items:center;gap:16px;width:100%;min-height:72px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:10px 16px 10px 10px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+#toppy-lc .thc-row.thc-zonder{grid-template-columns:minmax(0,1fr) auto 24px;padding-left:16px}
+#toppy-lc .thc-row:hover{box-shadow:var(--sh)}
+#toppy-lc .thc-row[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--ysoft)}
+#toppy-lc .thc-thumb{width:76px;height:54px;border-radius:6px;overflow:hidden;background:#fff;display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--mute)}
+#toppy-lc .thc-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+#toppy-lc .thc-thumb.thc-foto img{object-fit:cover}
+#toppy-lc .thc-thumb svg{width:100%;height:100%;display:block}
+#toppy-lc .thc-row b{display:block;font-size:15px;line-height:1.3}
+#toppy-lc .thc-row small{display:block;font-size:13px;color:var(--ink2);line-height:1.4;margin-top:2px}
+#toppy-lc .thc-rp{font-family:var(--head);font-weight:800;font-size:15px;white-space:nowrap;text-align:right;line-height:1.15}
+#toppy-lc .thc-rp i{display:block;font-style:normal;font-family:Poppins,Helvetica,Arial,sans-serif;font-weight:400;font-size:11px;color:var(--ink2)}
+#toppy-lc .thc-tag{display:inline-block;font-size:11px;font-weight:700;background:var(--y);color:var(--ink);border-radius:3px;padding:1px 7px;margin-left:6px;vertical-align:2px;line-height:1.5;white-space:nowrap}
+#toppy-lc .thc-tag-groen{background:var(--g);color:#fff}
+#toppy-lc .thc-tag-donker{background:var(--ink);color:#fff}
+#toppy-lc .thc-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;background:#fff}
+#toppy-lc .thc-row.thc-check .thc-dot{border-radius:5px}
+#toppy-lc .thc-row[aria-pressed="true"] .thc-dot{background:var(--y);border-color:var(--y)}
+#toppy-lc .thc-row[aria-pressed="true"] .thc-dot::after{content:"\2713";font-size:13px;font-weight:800;color:var(--ink)}
+#toppy-lc .thc-row.thc-adv{border-style:dashed}
+#toppy-lc .thc-row:focus-visible,#toppy-lc .thc-card:focus-visible,#toppy-lc .thc-btn:focus-visible,#toppy-lc .thc-step:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* grote kaarten (situatie, lamellen) */
+#toppy-lc .thc-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+#toppy-lc .thc-card{position:relative;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:0;cursor:pointer;overflow:hidden;display:grid;grid-template-columns:36% minmax(0,1fr);transition:box-shadow .15s}
+#toppy-lc .thc-card:hover{box-shadow:var(--sh)}
+#toppy-lc .thc-card[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--ysoft)}
+#toppy-lc .thc-card[aria-pressed="true"]::after{content:"\2713";position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;background:var(--y);display:grid;place-items:center;font-weight:800;font-size:13px}
+#toppy-lc .thc-cimg{position:relative;display:block;min-height:124px;background:var(--soft);overflow:hidden}
+#toppy-lc .thc-cimg img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+#toppy-lc .thc-cimg .thc-tag{position:absolute;top:8px;left:8px;margin:0;font-size:11px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+#toppy-lc .thc-cb{padding:14px 44px 14px 16px}
+#toppy-lc .thc-card b{display:block;font-size:16px;line-height:1.3}
+#toppy-lc .thc-card small{display:block;font-size:13px;color:var(--ink2);line-height:1.45;margin-top:3px}
+#toppy-lc .thc-card .thc-p{display:block;font-family:var(--head);font-weight:800;font-size:17px;margin-top:8px}
+#toppy-lc .thc-card .thc-p i{font-style:normal;font-family:Poppins,Helvetica,Arial,sans-serif;font-weight:400;font-size:12px;color:var(--ink2);margin-right:5px}
+#toppy-lc .thc-card .thc-p em{font-style:normal;font-family:Poppins,Helvetica,Arial,sans-serif;font-weight:400;font-size:12px;color:var(--ink2);margin-left:3px}
+#toppy-lc .thc-feit{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 0;padding:0;list-style:none;font-size:12.5px;color:var(--ink2)}
+#toppy-lc .thc-feit li::before{content:"\2713";color:var(--g);font-weight:800;margin-right:5px}
+
+/* maten */
+#toppy-lc .thc-maten{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+#toppy-lc .thc-hint{font-size:13px;color:var(--ink2);margin:0 0 12px}
+#toppy-lc .thc-calc{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;background:var(--soft);border-radius:var(--r);padding:12px 16px;font-size:14px}
+#toppy-lc .thc-calc b{font-family:var(--head);font-size:18px;font-weight:800}
+#toppy-lc .thc-calc small{flex-basis:100%;color:var(--ink2);font-size:12px}
+#toppy-lc .thc-tip{background:var(--ysoft);border:1px solid var(--y);border-radius:var(--r);padding:12px 16px;font-size:14px;margin-top:12px}
+
+/* overzicht + formulier */
+#toppy-lc .thc-sum{display:grid;gap:10px;margin:0 0 12px;font-size:14px}
+#toppy-lc .thc-sum section{background:var(--soft);border-radius:var(--r);padding:12px 16px 10px}
+#toppy-lc .thc-sum header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+#toppy-lc .thc-sum h3{margin:0;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+#toppy-lc .thc-sum button{border:0;background:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:0}
+#toppy-lc .thc-sum dl{margin:0}
+#toppy-lc .thc-sum dl div{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;padding:3px 0}
+#toppy-lc .thc-sum dt{color:var(--ink2)}
+#toppy-lc .thc-sum dd{margin:0;font-weight:600}
+@media (max-width:420px){#toppy-lc .thc-sum dl div{grid-template-columns:minmax(0,1fr)}#toppy-lc .thc-sum dl div{gap:0;padding:4px 0}}
+#toppy-lc .thc-pnoot{margin:8px 0 12px;font-size:13px;color:var(--ink2)}
+#toppy-lc .thc-kop{font-family:var(--head);font-size:18px;font-weight:800;margin:28px 0 12px}
+#toppy-lc .thc-kop1{margin-top:0}
+#toppy-lc .thc-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#toppy-lc .thc-two.thc-adres{grid-template-columns:2fr 1fr}
+@media (max-width:520px){#toppy-lc .thc-two,#toppy-lc .thc-two.thc-adres{grid-template-columns:1fr;gap:0}}
+#toppy-lc .thc-field{display:grid;gap:5px;margin-bottom:14px}
+#toppy-lc .thc-field label{font-weight:600;font-size:14px}
+#toppy-lc .thc-field label small{font-weight:400;color:var(--mute)}
+#toppy-lc .thc-field input,#toppy-lc .thc-field textarea,#toppy-lc .thc-field select{font-size:16px;border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;width:100%;background:#fff}
+#toppy-lc .thc-field input:focus,#toppy-lc .thc-field textarea:focus,#toppy-lc .thc-field select:focus{outline:none;border-color:var(--ink)}
+#toppy-lc .thc-err{color:var(--red);font-size:13px}
+#toppy-lc .thc-gerust{margin-top:6px;font-size:14px;color:var(--ink)}
+
+/* voetbalk */
+#toppy-lc .thc-foot{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--r2) var(--r2);padding:14px 24px;box-shadow:0 -6px 16px -10px rgba(0,0,0,.18)}
+@media (max-width:900px){#toppy-lc .thc-foot{padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}}
+#toppy-lc .thc-keuze{min-width:0;font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+#toppy-lc .thc-keuze b{color:var(--ink)}
+#toppy-lc .thc-prijs{text-align:right;font-size:12px;color:var(--ink2);line-height:1.15;white-space:nowrap}
+#toppy-lc .thc-prijs b{display:block;font-family:var(--head);font-size:20px;font-weight:800;color:var(--ink)}
+@media (max-width:600px){#toppy-lc .thc-keuze{display:none}#toppy-lc .thc-wat{display:none}}
+#toppy-lc .thc-btn{border:0;border-radius:var(--r);padding:13px 24px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
+#toppy-lc .thc-back{background:#fff;border:1px solid var(--line)}
+#toppy-lc .thc-go{background:var(--y);margin-left:auto}
+#toppy-lc .thc-prijs+.thc-go{margin-left:0}
+#toppy-lc .thc-go:hover{background:var(--y2)}
+#toppy-lc .thc-go[disabled]{opacity:.6;cursor:wait}
+@media (max-width:600px){#toppy-lc .thc-go{flex:1;min-width:0;white-space:normal;line-height:1.25}#toppy-lc .thc-btn{padding:12px 14px}}
+
+/* bedankt */
+#toppy-lc .thc-done{border:1px solid var(--line);border-radius:var(--r2);padding:40px 36px;background:#fff}
+#toppy-lc .thc-done:focus{outline:none}
+#toppy-lc .thc-done-in{max-width:620px;margin:0 auto}
+#toppy-lc .thc-done h2{font-family:var(--head);font-weight:800;font-size:28px;margin:0 0 10px}
+#toppy-lc .thc-vink{width:56px;height:56px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-size:28px;font-weight:800;margin-bottom:16px}
+#toppy-lc .thc-next{margin:16px 0 4px;padding:0;list-style:none;display:grid;gap:12px;counter-reset:n}
+#toppy-lc .thc-next li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;align-items:start;font-size:15px;counter-increment:n}
+#toppy-lc .thc-next li::before{content:counter(n);width:26px;height:26px;border-radius:50%;background:var(--y);display:grid;place-items:center;font-weight:700;font-size:13px}
+#toppy-lc .thc-done .thc-btn{margin-top:20px}
+@media (max-width:600px){#toppy-lc .thc-done{padding:24px 16px}#toppy-lc .thc-done h2{font-size:22px}}
+#toppy-lc .thc-x{border:0;background:var(--soft);color:var(--ink);width:36px;height:36px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;flex:none}
+#toppy-lc .thc-x:hover{background:var(--line)}
+@media (max-width:600px){
+  #toppy-lc .thc-steps{overflow:visible;padding:0 4px}
+  #toppy-lc .thc-step{flex:1 1 auto;padding:11px 3px 9px;font-size:13px;gap:6px}
+  #toppy-lc .thc-step:not(.is-now) span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  #toppy-lc .thc-step.is-now{flex:2 1 auto}
+  #toppy-lc .thc-step i{width:22px;height:22px}
+  #toppy-lc .thc-panel h2{font-size:22px}
+  #toppy-lc .thc-lead{font-size:14px;margin-bottom:18px}
+  #toppy-lc .thc-card{grid-template-columns:34% minmax(0,1fr)}
+  #toppy-lc .thc-cb{padding:12px 38px 12px 12px}
+  #toppy-lc .thc-card small{font-size:12.5px}
+  #toppy-lc .thc-row{grid-template-columns:60px minmax(0,1fr) auto 22px;gap:12px;padding:8px 12px 8px 8px}
+  #toppy-lc .thc-row.thc-zonder{grid-template-columns:minmax(0,1fr) auto 22px;padding-left:14px}
+  #toppy-lc .thc-thumb{width:60px;height:46px}
+}
+/* losse pagina (iframe in een modal): vult het kader; alleen het middenstuk scrolt */
+#toppy-lc.thc-app{height:100vh;height:100dvh;max-width:none;display:flex;flex-direction:column;overflow:hidden}
+#toppy-lc.thc-app>*{flex:none}
+#toppy-lc.thc-app .thc-test{margin:0;border-radius:0;border-width:0 0 1px;padding:4px 14px;font-size:12px}
+#toppy-lc.thc-app .thc-steps{border-radius:0;border-left:0;border-right:0;border-top:0}
+#toppy-lc.thc-app .thc-main,#toppy-lc.thc-app .thc-foot{border-left:0;border-right:0;border-radius:0}
+#toppy-lc.thc-app .thc-main{flex:1 1 auto;min-height:0;overflow:hidden;grid-template-rows:minmax(0,1fr)}
+#toppy-lc.thc-app .thc-stage,#toppy-lc.thc-app .thc-panel{overflow:auto;overscroll-behavior:contain}
+#toppy-lc.thc-app .thc-foot{position:static}
+#toppy-lc.thc-app .thc-steps .thc-x{margin:0 6px 0 6px;width:32px;height:32px;font-size:20px}
+#toppy-lc.thc-app .thc-done{flex:1 1 auto;min-height:0;overflow:auto;border:0;border-radius:0}
+@media (max-width:900px){
+  #toppy-lc.thc-app .thc-main{display:block;overflow:auto;overscroll-behavior:contain}
+  #toppy-lc.thc-app .thc-stage,#toppy-lc.thc-app .thc-panel{overflow:visible}
+  #toppy-lc.thc-app .thc-stage{display:contents}
+  #toppy-lc.thc-app .thc-pic{position:sticky;top:0;z-index:3;aspect-ratio:auto;height:min(52vw,26vh);border-radius:0;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  #toppy-lc.thc-app .thc-pic figcaption{display:none}
+  #toppy-lc.thc-app .thc-vraag p{display:none}
+  #toppy-lc.thc-app .thc-vraag span{width:auto;height:72%;font-size:clamp(40px,12vw,64px)}
+  #toppy-lc.thc-app .thc-gekozen{display:flex}
+  #toppy-lc.thc-app .thc-uitleg,#toppy-lc.thc-app .thc-verg{display:none}
+  #toppy-lc.thc-app .thc-stage .thc-usp{margin:14px 16px 0}
+  #toppy-lc.thc-app .thc-panel{border-top:1px solid var(--line);margin-top:14px}
+}
+@media (max-width:600px){#toppy-lc.thc-app .thc-stage .thc-usp{display:none}}
+@media (prefers-reduced-motion:reduce){#toppy-lc .thc-row,#toppy-lc .thc-card{transition:none}}
+/* losse link (geen iframe): venster midden boven over een gedimde pagina, zoals de pop-up */
+html.thc-los,html.thc-los body{background:rgba(30,36,38,.6);min-height:100%}
+html.thc-los body{padding:24px;box-sizing:border-box}
+html.thc-los #toppy-lc.thc-app{width:min(1120px,100%);height:min(880px,calc(100vh - 48px));height:min(880px,calc(100dvh - 48px));margin:0 auto;background:#fff;border-radius:.875rem;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@media (max-width:600px){html.thc-los body{padding:0}html.thc-los #toppy-lc.thc-app{height:100vh;height:100dvh;border-radius:0}}
+</style>
+<script>
+(function () {
+/* ================= INSTELLINGEN ================= */
+var INSTELLINGEN = {
+  // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
+  verzenden: true,
+  // Verborgen JotForm-veld "Herkomst" (gclid, utm, pagina) voor Freshdesk, bijv. 'q160_herkomst'.
+  // Leeg = de herkomst staat onderaan "wil je alvast iets doorgeven? (connectie)" (q158).
+  herkomstVeld: '',
+  // Lamellen: vanaf-prijs per m² incl. btw per kleur (lamellenpagina + JotForm 223043516146347).
+  lamellen: {
+    "Solar polycarbonaat": { kort: "Solar", levensduur: "10 tot 15 jaar", garantie: "5 jaar", warmte: "Verwarmt je water met de zon", sterkte: "Bestand tegen flinke hagel",
+      tekst: "Dekt je bad af en verwarmt je water gratis met de zon. De slimste keuze voor de lange termijn.",
+      kleuren: { "Blauw": 119.95, "Transparant": 119.95, "Zilver": 129.95, "Graphite": 139.95, "Gold": 139.95 } },
+    "Polycarbonaat budget": { kort: "Budget", levensduur: "3 tot 5 jaar", garantie: "2 jaar", warmte: "Warmt een beetje op", sterkte: "Steviger dan PVC",
+      tekst: "Steviger dan PVC, met beperkte bescherming tegen uv-straling. Wil je er nog meer uithalen? Dan is solar de logische stap.",
+      kleuren: { "Blauw": 78, "Graphite": 78, "Zilver": 78 } },
+    "PVC lamellen": { kort: "PVC", levensduur: "2 tot 4 jaar", garantie: "2 jaar", warmte: "Houdt je bad dicht", sterkte: "Minst stevig",
+      tekst: "Een betaalbare instap om je zwembad mee af te dekken. Houdt vuil buiten en is ideaal voor binnenbaden.",
+      kleuren: { "Grijs": 69.95, "Wit": 69.95 } }
+  },
+  // Oprollers (alleen bij een compleet lamellendek met bovengronds systeem), vanaf-prijs incl. btw.
+  oprollers: { "Open Manu": 1495, "Open Classic": 2645, "AQS Automatisch oprolsysteem": 2895, "Tixit": 2995, "Open Aero": 3105,
+    "Contura": 3395, "Open Banc Classic": 4995, "Open Banc Classic Houtkleur": 5599, "Banc Design": 6995 },
+  installatie: 400,     // "Inclusief installatie - vanaf € 400"
+  inmeten: 150,         // "+ Inmeten van het zwembad - vanaf € 150"
+  afvoeren: 150,        // "+ Afvoeren oude lamellen - vanaf € 150"
+  // Foto's staan in de map lamellendek/ van deze repo (uit het oude JotForm en de DAM van toppy.nl).
+  // Een betere foto? Zet hem in lamellendek/ en pas hier de bestandsnaam aan.
+  afbeeldingen: {
+    "Compleet lamellendek": "lamellendek/situatie-nieuw.webp",
+    "Vervanglamellen": "lamellendek/situatie-vervang.webp",
+    "Solar polycarbonaat": "lamellendek/type-solar.webp",
+    "Polycarbonaat budget": "lamellendek/type-budget.webp",
+    "PVC lamellen": "lamellendek/type-pvc.webp",
+    "Solar polycarbonaat|Blauw": "lamellendek/solar-blauw.webp",
+    "Solar polycarbonaat|Transparant": "lamellendek/solar-transparant.webp",
+    "Solar polycarbonaat|Zilver": "lamellendek/solar-zilver.webp",
+    "Solar polycarbonaat|Graphite": "lamellendek/solar-graphite.webp",
+    "Solar polycarbonaat|Gold": "lamellendek/solar-gold.webp",
+    "Polycarbonaat budget|Blauw": "lamellendek/budget-blauw.webp",
+    "Polycarbonaat budget|Graphite": "lamellendek/budget-graphite.webp",
+    "Polycarbonaat budget|Zilver": "lamellendek/budget-zilver.webp",
+    "PVC lamellen|Grijs": "lamellendek/pvc-grijs.webp",
+    "PVC lamellen|Wit": "lamellendek/pvc-wit.webp",
+    "Bovengronds systeem": "lamellendek/systeem-bovengronds.webp",
+    "Onderwater buismotor": "lamellendek/systeem-onderwater.webp",
+    "Open Manu": "lamellendek/open-manu.webp",
+    "Open Classic": "lamellendek/open-classic.webp",
+    "AQS Automatisch oprolsysteem": "lamellendek/aqs-oproller.webp",
+    "Tixit": "lamellendek/tixit.webp",
+    "Open Aero": "lamellendek/open-aero.webp",
+    "Contura": "lamellendek/contura.webp",
+    "Open Banc Classic": "lamellendek/banc-classic.webp",
+    "Open Banc Classic Houtkleur": "lamellendek/banc-classic-hout.webp",
+    "Banc Design": "lamellendek/banc-design.webp"
+  },
+  usps: [
+    "Klanten geven ons een 9/10",
+    "Gratis levering binnen NL/BE",
+    "Inmeten en installatie via onze partners",
+    "Showroom in Spijk (bij Gorinchem)"
+  ],
+  // Labels om te sturen, bijv. {"Solar polycarbonaat": {"tekst": "Aanbevolen", "kleur": "groen"}}. Kleuren: geel, groen, donker.
+  labels: { "Solar polycarbonaat": { tekst: "Aanbevolen", kleur: "groen" }, "Solar polycarbonaat|Blauw": { tekst: "Meest gekozen", kleur: "geel" } }
+};
+/* ================= Hieronder niets aanpassen ================= */
+
+var FORM_ID = '223043516146347';
+var FORM_URL = 'https://eu-submit.jotform.com/submit/' + FORM_ID;
+var ADVIES = 'Weet ik nog niet';
+var SAMPLE = 'https://www.toppy.nl/product/14538/aqs-polycarbonaat-zwembad-lamellen-sample-kit.html';
+var JF = 'https://www.jotform.com/uploads/Stef_stef/form_files/', JT = 'https://www.jotform.com/uploads/Toppy_Jotform/form_files/';
+var JF_ADV = JF + 'baddelivery copy 8.6284fba8016439.86116449.png';
+// Exacte antwoordwaarden van JotForm 223043516146347 (afbeeldingskeuze = "tekst|plaatje").
+// Alleen met precies deze waarden ziet JotForm (en het Freshdesk-ticket) de keuze als aangevinkt.
+var JW = {
+  situatie: { "Compleet lamellendek": "Compleet lamellendek (Nieuwe situatie)|" + JF + "Lamellendek.636121ccbbc8c9.27603379.jpg",
+              "Vervanglamellen": "Vervanglamellen (Bestaande situatie)|" + JF + "Vervang%20lamellen.636131fb05b576.59488754.jpg" },
+  vorm: { "Geen trap": "Geen uitwendige trap|" + JF + "Rechthoek.6398688c3b9804.28160041.png",
+          "Romeinse trap": "Romeinse trap|" + JF + "Romeins.63986f9fed1414.81577846.png",
+          "Uitwendige trap": "Uitwendige trap|" + JF + "Kopse%20kant.639868952ce452.84790299.png",
+          "Romeinse trap, lange zijde": "Romeinse trap, lange zijde|" + JF + "Romeins%20%281%29.639871004dd2c8.67066223.png",
+          "Uitwendige trap, lange zijde": "Uitwendige trap, lange zijde|" + JF + "Lange%20zijde.6398689e1773d8.01978510.png",
+          "Andere vorm": "Andere vorm|" + JF_ADV },
+  systeem: { "Bovengronds systeem": "Bovengronds systeem|" + JF + "contura.6361264a9e1685.36794675.webp",
+             "Onderwater buismotor": "Onderwater Buismotor systeem|" + JF + "nis.63cf9577dd1e35.73537839.JPG" },
+  systeemAnders: "Anders|" + JF_ADV,
+  materiaal: { "PVC": "PVC | vanaf €69,95|" + JF + "Enkel%20lamellen.63613256da4638.44258699.JPG",
+               "Polycarbonaat": "Polycarbonaat | vanaf €78,-|" + JF + "lamellen%20feel.6361326708c046.54298699.jpg",
+               "Advies": "Ik laat me graag informeren|" + JF + "baddelivery%20copy%204.62695568992c65.70070858.png" },
+  kwaliteit: { "Solar polycarbonaat": "Hoogwaardige kwaliteit: verwachte levensduur 10 tot 15 jaar (Aanbevolen)",
+               "Polycarbonaat budget": "Instapkwaliteit: verwachte levensduur 2 tot 5 jaar" },
+  kleur: {
+    "PVC lamellen": { veld: 'q43_vanWelke43[]', con: 'q144_vanWelk144',
+      "Grijs": "AQS PVC Grijs | vanaf €69,95|" + JF + "900_1131_lichtgrijs_1.636211d0e92673.33108011.webp",
+      "Wit": "AQS PVC Wit | vanaf €69,95|" + JT + "wit.6a5f6afa988721.94469421.jpg" },
+    "Solar polycarbonaat": { veld: 'q133_ltspanStylefontsize133[]', con: 'q145_vanWelk145',
+      "Blauw": "AQS Polycarbonaat Solar Blauw (meest gekozen) | vanaf €119,95|" + JF + "solar_blue_1.6361344a2709e2.79721596.jpg",
+      "Transparant": "AQS Polycarbonaat Solar Transparant | vanaf €119,95|" + JF + "solar_transparant_1.6362139cd6dc23.37978624.jpg",
+      "Zilver": "AQS Polycarbonaat Solar Zilver | vanaf €129,95|" + JF + "solar_silver_1.636213d99594c2.52474707.jpg",
+      "Graphite": "AQS Polycarbonaat Solar Graphite | vanaf €139,95|" + JF + "Sample_Lamel_hoofdafbeelding.65b37649eff725.61207200.png",
+      "Gold": "AQS Polycarbonaat Solar Gold | vanaf €139,95|" + JF + "solar_gold_1.636213f366d346.69302857.jpg" },
+    "Polycarbonaat budget": { veld: 'q136_vanWelk[]', con: 'q146_vanWelk146',
+      "Blauw": "AQS Polycarbonaat Solar Blauw | vanaf €78,-|" + JT + "blauw.6a1d88baefa418.82340841.png",
+      "Graphite": "AQS Polycarbonaat Solar Graphite | vanaf €78,-|" + JT + "graphite.6a1d88c5a44c90.92214441.jpg",
+      "Zilver": "AQS Polycarbonaat Solar Zilver | vanaf €78,-|" + JT + "zilver.6a1d88d44a9422.75382758.jpg" }
+  },
+  kleurAdvies: "Wat een keuze(stress)! Graag heb ik hier nog persoonlijk advies over.|" + JF_ADV,
+  oproller: { "Open Manu": "Open Manu | vanaf €1.495,-|" + JF + "manu_produit_1.6231c91867a2e1.50992011.webp",
+    "Open Classic": "Open Classic | vanaf €2.645,-|" + JF + "open_classic_produit.6231c84c1d0f54.52987317.webp",
+    "AQS Automatisch oprolsysteem": "AQS Automatisch oprolsysteem | vanaf €2.895,-|" + JF + "AQS.663a015e7aacd9.45862697.JPG",
+    "Open Aero": "Open Aero | vanaf €3.105,-|" + JF + "open_aero_produit.6231c9287602f0.89949375.webp",
+    "Tixit": "Tixit | vanaf €2.995,-|" + JF + "tixit_ambiance_2019_large%20(1).6231c97304b752.12198744.webp",
+    "Contura": "Contura | vanaf €3.395,-|" + JF + "Contura-L.620e31cb4d9520.18642588.jpg",
+    "Open Banc Classic": "Open Banc Classic | vanaf €4.995,-|" + JF + "banc_classic_produit_wit.620e3a26100665.21040607.webp",
+    "Open Banc Classic Houtkleur": "Open Banc Classic Houtkleur | vanaf €5.599,-|" + JF + "banc_classic_produit.62419d7b9cf0d6.77715635.jpg",
+    "Banc Design": "Banc Design | vanaf €6.995,-|" + JF + "banc_d_sign_produit.62419d895151b5.61575061.jpg" },
+  installatie: { zelf: "Ik installeer alles zelf, met jullie hulp op afstand|" + JF + "Montage.65783d61c45438.61938811.webp",
+    partner: "Inclusief installatie - vanaf €400,-|" + JF + "Icoon-Servicemonteur.65783d6ac69ef5.06693682.jpg",
+    inmeten: "+ Inmeten van het zwembad - vanaf €150,-|" + JF + "4182524-meetlint-lineaire-pictogram-dunne-lijn-illustratie-contour-symbool-geisoleerd-omtrek-tekening-vector.65783d88816697.47544057.jpg",
+    afvoeren: "+ Afvoeren oude lamellen - vanaf €150,-|" + JF + "pictogram-bord-afvalbak-wit.65783daa843258.37460983.png" }
+};
+
+var SITUATIES = ['Compleet lamellendek', 'Vervanglamellen'];
+var MERKEN = ['AQS', 'Aquadeck', 'Starline/Roldeck', 'Anders/Weet ik niet'];
+var TYPES = ['Solar polycarbonaat', 'Polycarbonaat budget', 'PVC lamellen'];
+var VORMEN = ['Geen trap', 'Romeinse trap', 'Uitwendige trap', 'Romeinse trap, lange zijde', 'Uitwendige trap, lange zijde', 'Andere vorm'];
+var SYSTEMEN = ['Bovengronds systeem', 'Onderwater buismotor'];
+
+var S = {situatie:'Compleet lamellendek', merk:'', type:'Solar polycarbonaat', kleur:'Blauw', vorm:'Geen trap', lengte:'', breedte:'',
+  systeem:'Bovengronds systeem', oproller:'Open Manu', installatie:'zelf', inmeten:false, afvoeren:false,
+  voornaam:'', achternaam:'', email:'', tel:'', straat:'', postcode:'', plaats:'', land:'Nederland', wensen:''};
+var ALLE = [
+  {id:'situatie', kort:'Situatie', titel:'Wat zoek je?', lead:'Een compleet lamellendek voor je zwembad, of nieuwe lamellen voor je bestaande oproller.'},
+  {id:'lamellen', kort:'Lamellen', titel:'Wat voor lamellen passen bij jou?', lead:'Alle drie op maat gemaakt. Het verschil zit in levensduur, sterkte en warmte.'},
+  {id:'kleur', kort:'Kleur', titel:'Kies je kleur', lead:'De prijs per m² hangt af van de kleur. Twijfel je? Bestel de sample kit.'},
+  {id:'zwembad', kort:'Zwembad', titel:'Vorm en maten van je zwembad', lead:'Vul de binnenmaat in. Wij controleren de exacte maat altijd nog samen met je, voordat je bestelt.'},
+  {id:'oprollen', kort:'Oprollen', titel:'Hoe wil je oprollen?', lead:'Een bovengronds systeem past alleen bij een volledig ingegraven zwembad. Voor een onderwater buismotor is een nis in het zwembad nodig.'},
+  {id:'installatie', kort:'Installatie', titel:'Installatie', lead:'Zelf installeren of door een van onze partners. Inmeten en installeren regelen we volledig via onze betrouwbare partners.'},
+  {id:'overzicht', kort:'Overzicht', titel:'Ontvang je persoonlijke voorstel', lead:'Een zwembadspecialist van Toppy bekijkt je keuzes en stuurt je een voorstel op maat.', contact:true}
+];
+function stappen(){ return ALLE.filter(function(s){ return s.id!=='oprollen'||S.situatie==='Compleet lamellendek'; }); }
+var stap=0, verst=0, klaar=false, bezig=false, fout={}, laatst=null, kapot={}, bovenaan=false;
+var root=document.getElementById('toppy-lc');
+var APP=root.hasAttribute('data-pagina'), IFRAME=window.parent!==window;
+if(APP) root.className='thc-app';
+if(APP&&!IFRAME) document.documentElement.classList.add('thc-los');
+function sluit(){ if(IFRAME) return meld('sluiten'); if(document.referrer&&history.length>1) history.back(); else location.href='https://www.toppy.nl/c/lamellendek'; }
+function meld(type,extra){ if(!IFRAME) return; var d={bron:'toppy-lamellen-configurator',type:type}; for(var k in extra||{}) d[k]=extra[k]; try{ window.parent.postMessage(d,'*'); }catch(x){} }
+/* ---------- herkomst voor Freshdesk en doorsturen naar de bedankpagina ---------- */
+// popup.js geeft gclid, utm-tags en de pagina mee in de url. Het oude formulier sloeg dit niet op.
+var HERKOMST=(function(){ var h={}, q;
+  try{ q=new URLSearchParams(location.search); }catch(x){ return h; }
+  ['gclid','gbraid','wbraid','fbclid','msclkid','utm_source','utm_medium','utm_campaign','utm_term','utm_content','landing','pagina','referrer'].forEach(function(k){ var w=q.get(k); if(w) h[k]=w.slice(0,500); });
+  if(!IFRAME&&!h.pagina&&document.referrer) h.pagina=document.referrer.slice(0,500);
+  return h; })();
+function herkomstTekst(){ var r=[]; for(var k in HERKOMST) r.push(k+': '+HERKOMST[k]); return r.length?r.join('\n'):'Onbekend (direct bezoek)'; }
+// bestaande trigger in Tag Manager: url met "bedankt-offerte-aanvraag" telt als offerte-conversie.
+// Het oude formulier stuurde Belgen naar toppy.be, dat doen we hier ook.
+function bedankt(){ return 'https://www.toppy.'+(S.land==='België'?'be':'nl')+'/bedankt-offerte-aanvraag?configurator=lamellendek'; }
+
+function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function eur(n,dec){return '€ '+n.toLocaleString('nl-NL',{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});}
+function img(k){var u=(INSTELLINGEN.afbeeldingen||{})[k];return u&&!kapot[u]?u:'';}
+function lab(v){ var l=(INSTELLINGEN.labels||{})[v]; if(!l||!l.tekst) return ''; var k=/^(geel|groen|donker)$/.test(l.kleur)?l.kleur:'geel'; return '<span class="thc-tag thc-tag-'+k+'">'+e(l.tekst)+'</span>'; }
+function T(){ return INSTELLINGEN.lamellen[S.type]||null; }
+function nieuw(){ return S.situatie==='Compleet lamellendek'; }
+function kleuren(){ var t=T(); return t?Object.keys(t.kleuren):[]; }
+function vanafType(t){ var k=INSTELLINGEN.lamellen[t].kleuren; return Math.min.apply(null,Object.keys(k).map(function(x){return k[x];})); }
+function pm2(){ var t=T(); if(!t) return null; return t.kleuren[S.kleur]!=null?t.kleuren[S.kleur]:vanafType(S.type); }
+function vanafAlles(){ return Math.min.apply(null,TYPES.map(vanafType)); }
+
+/* ---------- rekenen ---------- */
+function getal(x){ var n=parseInt(String(x).replace(/\D/g,''),10); return isNaN(n)?null:n; }
+function maatOk(){ var l=getal(S.lengte), b=getal(S.breedte); return l!==null&&b!==null&&l>=100&&b>=100&&l<=5000&&b<=2500; }
+function m2(){ return maatOk()?getal(S.lengte)*getal(S.breedte)/10000:null; }
+function oprollerPrijs(){ return nieuw()&&S.systeem==='Bovengronds systeem'?(INSTELLINGEN.oprollers[S.oproller]||0):0; }
+function installatiePrijs(){ return (S.installatie==='partner'?INSTELLINGEN.installatie:0)+(S.inmeten?INSTELLINGEN.inmeten:0)+(S.afvoeren&&!nieuw()?INSTELLINGEN.afvoeren:0); }
+function lamelPrijs(){ var m=m2(), p=pm2(); return m===null||p===null?null:m*p; }
+function indicatie(){ var l=lamelPrijs(); return l===null?null:l+oprollerPrijs()+installatiePrijs(); }
+
+/* ---------- vormtekeningen (bovenaanzicht met lamellen en maatlijnen L/B) ---------- */
+var SVGN=0;
+function vormSvg(v, maten){
+  // basin = rechthoek 100..340 x 70..200; trap op korte zijde links, op lange zijde onder
+  var sh={
+    'Geen trap':{d:'M80 70H340V200H80Z',L:[80,340],B:[70,200]},
+    'Romeinse trap':{d:'M120 70H340V200H120V175A40 40 0 0 1 120 95Z',L:[80,340],B:[70,200]},
+    'Uitwendige trap':{d:'M120 70H340V200H120V165H80V105H120Z',L:[80,340],B:[70,200]},
+    'Romeinse trap, lange zijde':{d:'M80 60H340V180H250A40 40 0 0 1 170 180H80Z',L:[80,340],B:[60,180]},
+    'Uitwendige trap, lange zijde':{d:'M80 60H340V180H245V215H175V180H80Z',L:[80,340],B:[60,180]}
+  }[v];
+  if(!sh) return '';
+  var id='tlc-c'+(++SVGN), g='<defs><clipPath id="'+id+'"><path d="'+sh.d+'"/></clipPath></defs>';
+  g+='<path d="'+sh.d+'" fill="#7fb7d8"/><g clip-path="url(#'+id+')">';
+  // lamellen: banen over de breedte, oprollen in de lengte
+  var x0=v.indexOf('lange')<0&&v!=='Geen trap'?120:80;
+  for(var x=x0;x<340;x+=13) g+='<rect x="'+x+'" y="'+sh.B[0]+'" width="11" height="'+(sh.B[1]-sh.B[0])+'" fill="#5b8fb0" opacity=".55"/>';
+  g+='</g><path d="'+sh.d+'" fill="none" stroke="#2f5670" stroke-width="3"/>';
+  if(maten){
+    var my=sh.B[1]+28, mx=362;
+    [['L',sh.L[0],sh.L[1],my,true],['B',sh.B[0],sh.B[1],mx,false]].forEach(function(q){
+      var L=q[0], a=q[1], b=q[2], c=q[3], hor=q[4], mid=(a+b)/2;
+      if(L==='L'&&v.indexOf('lange zijde')>0) c=sh.B[1]+(v.indexOf('Romeinse')===0?60:52);
+      var ln=hor?'M'+a+' '+c+'H'+b+'M'+a+' '+(c-7)+'V'+(c+7)+'M'+b+' '+(c-7)+'V'+(c+7):'M'+c+' '+a+'V'+b+'M'+(c-7)+' '+a+'H'+(c+7)+'M'+(c-7)+' '+b+'H'+(c+7);
+      var cx=hor?mid:c, cy=hor?c:mid;
+      g+='<path d="'+ln+'" stroke="#343e40" stroke-width="2" fill="none"/><circle cx="'+cx+'" cy="'+cy+'" r="13" fill="#ffcb01" stroke="#343e40" stroke-width="2"/>'+
+         '<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="14" font-weight="700" fill="#343e40">'+L+'</text>';
+    });
+  }
+  return '<svg viewBox="0 0 400 290" role="img" aria-label="Tekening '+e(v)+'" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
+}
+// eenvoudige iconen voor installatie (geen goede foto's in het oude formulier)
+var ICOON={
+  zelf:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><path d="M22 34l14-14m-3-5a6 6 0 0 1 8 8l-3 3-5-5z" stroke="#343e40" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="36" r="3" fill="#ffcb01"/></svg>',
+  partner:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><circle cx="32" cy="17" r="7" fill="#343e40"/><path d="M19 40c1-8 6-12 13-12s12 4 13 12z" fill="#343e40"/><path d="M24 13h16v-3a8 8 0 0 0-16 0z" fill="#ffcb01"/></svg>',
+  inmeten:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><rect x="10" y="18" width="44" height="12" rx="2" fill="#ffcb01" stroke="#343e40" stroke-width="2"/><path d="M16 18v5M22 18v4M28 18v5M34 18v4M40 18v5M46 18v4" stroke="#343e40" stroke-width="2"/></svg>',
+  afvoeren:'<svg viewBox="0 0 64 48"><rect width="64" height="48" fill="#f5f5f3"/><path d="M22 16h20l-2 22H24z" fill="#343e40"/><path d="M19 15h26M28 11h8" stroke="#343e40" stroke-width="3" stroke-linecap="round"/><path d="M29 21v13M35 21v13" stroke="#ffcb01" stroke-width="2"/></svg>'
+};
+
+/* ---------- onderdelen ---------- */
+// rij: k = veld in S, v = waarde; opt: naam, sub, prijs [bedrag, onderschrift], beeld, svg, foto, check, adv
+function rij(k,v,opt){
+  opt=opt||{};
+  var aan=opt.check?!!S[k]:S[k]===v, u=opt.svg?'':img(opt.beeld||v), th=opt.svg||(u?'<img src="'+e(u)+'" alt="" loading="lazy" decoding="async" data-src="'+e(u)+'">':(opt.adv?'?':''));
+  var zonder=!th&&!opt.adv;
+  return '<button type="button" class="thc-row'+(opt.adv?' thc-adv':'')+(opt.check?' thc-check':'')+(zonder?' thc-zonder':'')+'" aria-pressed="'+aan+'" data-k="'+k+'" data-v="'+e(v)+'"'+(opt.check?' data-check="1"':'')+'>'+
+    (zonder?'':'<span class="thc-thumb'+(opt.foto?' thc-foto':'')+'">'+th+'</span>')+
+    '<span><b>'+e(opt.naam||v)+(opt.label||'')+'</b>'+(opt.sub?'<small>'+e(opt.sub)+'</small>':'')+'</span>'+
+    '<span class="thc-rp">'+(opt.prijs?'<i>'+e(opt.prijs[1])+'</i>'+e(opt.prijs[0]):'')+'</span><span class="thc-dot"></span></button>';
+}
+function kaart(k,v,body){
+  var f=img(v);
+  return '<button type="button" class="thc-card" aria-pressed="'+(S[k]===v)+'" data-k="'+k+'" data-v="'+e(v)+'"><span class="thc-cimg">'+(f?'<img src="'+e(f)+'" alt="" loading="lazy" decoding="async" data-src="'+e(f)+'">':'')+lab(v)+'</span>'+
+    '<span class="thc-cb">'+body+'</span></button>';
+}
+function typeKaart(t){
+  var d=INSTELLINGEN.lamellen[t];
+  return kaart('type',t,'<b>'+e(t)+'</b><small>'+e(d.tekst)+'</small>'+
+    '<ul class="thc-feit"><li>Levensduur '+e(d.levensduur)+'</li><li>'+e(d.garantie)+' garantie</li></ul>'+
+    '<span class="thc-p"><i>vanaf</i>'+eur(vanafType(t),true)+'<em>per m²</em></span>');
+}
+function stapId(){ return stappen()[stap].id; }
+function gekozen(){
+  var r=[], id=stapId();
+  if(id==='situatie') r.push(['Situatie',S.situatie]);
+  if(id==='lamellen') r.push(['Lamellen',S.type]);
+  if(id==='kleur') r.push(['Kleur',S.kleur]);
+  if(id==='zwembad'){ r.push(['Vorm',S.vorm]); var m=m2(); if(m!==null) r.push(['Oppervlakte',m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²']); }
+  if(id==='oprollen') r.push(['Oprollen',S.systeem==='Bovengronds systeem'?S.oproller:S.systeem]);
+  return r.length?'<div class="thc-gekozen" aria-hidden="true">'+r.map(function(x){return '<span><i>'+e(x[0])+'</i>'+e(x[1])+'</span>';}).join('')+'</div>':'';
+}
+function vergelijking(){
+  var rijen=[['Levensduur','levensduur'],['Garantie','garantie'],['Warmte','warmte'],['Sterkte','sterkte']];
+  return '<div class="thc-verg"><table><thead><tr><th></th>'+TYPES.map(function(t){return '<th'+(t===S.type?' class="is-aan"':'')+'>'+e(INSTELLINGEN.lamellen[t].kort)+'</th>';}).join('')+'</tr></thead><tbody>'+
+    rijen.map(function(r){ return '<tr><td>'+r[0]+'</td>'+TYPES.map(function(t){return '<td'+(t===S.type?' class="is-aan"':'')+'>'+e(INSTELLINGEN.lamellen[t][r[1]])+'</td>';}).join('')+'</tr>'; }).join('')+
+    '<tr><td>Per m²</td>'+TYPES.map(function(t){return '<td'+(t===S.type?' class="is-aan"':'')+'>vanaf '+eur(vanafType(t),true)+'</td>';}).join('')+'</tr></tbody></table></div>';
+}
+function podium(){
+  var id=stapId(), v='', u='', sv='', wit=false, adv=false, uitleg='', extra='';
+  if(id==='situatie'){ v=S.situatie; u=img(v); uitleg=nieuw()?'Lamellen, oproller en installatie in één voorstel, op maat van je zwembad.':'Je houdt je oproller en krijgt nieuwe lamellen op maat. Laat ons weten welk merk je nu hebt.'; }
+  else if(id==='lamellen'){ v=laatst&&INSTELLINGEN.lamellen[laatst]?laatst:S.type; u=img(v); extra=vergelijking(); }
+  else if(id==='kleur'){ v=S.kleur; adv=v===ADVIES; u=img(S.type+'|'+v); wit=!!u; if(!u) u=img(S.type); }
+  else if(id==='zwembad'){ v=S.vorm; adv=v==='Andere vorm'; sv=vormSvg(v,true); uitleg=adv?'':'L is de lengte inclusief een eventuele trap, B is de breedte. De lamellen rollen op in de lengte.'; }
+  else if(id==='oprollen'){ if(S.systeem==='Bovengronds systeem'){ v=S.oproller===ADVIES?S.systeem:S.oproller; u=img(v); wit=!!u&&v!==S.systeem; } else if(S.systeem===ADVIES){ v=ADVIES; adv=true; } else { v=S.systeem; u=img(v); wit=true; uitleg='Voor een onderwater buismotor is een nis bij de bouw van het zwembad nodig. De specialist stemt de motor af op je nis.'; } }
+  else if(id==='installatie'){ v=S.type; u=img(S.type); uitleg='Kies je voor zelf installeren? Dan helpen we je op afstand. Is er een kraan nodig, dan regelen we die op aanvraag (tegen betaling).'; }
+  else { v=S.type; u=img(S.type); }
+  var vt=id==='zwembad'?'Geen standaardvorm? Een zwembadspecialist kijkt met je mee':'Geen probleem, een specialist adviseert je persoonlijk';
+  return '<figure class="thc-stage"><div class="thc-pic'+(sv?' thc-tek':wit?' thc-wit':'')+'">'+(adv?'<div class="thc-vraag"><span>?</span><p>'+vt+'</p></div>':sv?sv:u?'<img src="'+e(u)+'" alt="" decoding="async" data-src="'+e(u)+'">':'')+
+    (v&&!adv&&v!==ADVIES?'<figcaption>'+e(id==='kleur'?S.type+' · '+v:v)+'</figcaption>':'')+gekozen()+'</div>'+
+    (uitleg?'<div class="thc-uitleg"><b>'+e(v)+'</b><p>'+e(uitleg)+'</p></div>':'')+extra+usps()+'</figure>';
+}
+function usps(){ var u=(INSTELLINGEN.usps||[]).filter(function(x){return x&&String(x).trim();}); return u.length?'<ul class="thc-usp">'+u.map(function(x){return '<li>'+e(x)+'</li>';}).join('')+'</ul>':''; }
+function maatTekst(){ return maatOk()?'Lengte '+getal(S.lengte)+' cm (incl. trap), breedte '+getal(S.breedte)+' cm':'Nog niet ingevuld'; }
+function oprolTekst(){ if(!nieuw()) return 'Bestaande oproller'+(S.merk?' ('+S.merk+')':''); if(S.systeem!=='Bovengronds systeem') return S.systeem; return S.systeem+': '+S.oproller+(INSTELLINGEN.oprollers[S.oproller]?' (vanaf '+eur(INSTELLINGEN.oprollers[S.oproller])+')':''); }
+function instTekst(){ var r=[S.installatie==='partner'?'Inclusief installatie (vanaf '+eur(INSTELLINGEN.installatie)+')':'Zelf installeren, met hulp op afstand'];
+  if(S.inmeten) r.push('inmeten (vanaf '+eur(INSTELLINGEN.inmeten)+')'); if(S.afvoeren&&!nieuw()) r.push('afvoeren oude lamellen (vanaf '+eur(INSTELLINGEN.afvoeren)+')'); return r.join(' + '); }
+function lamelTekst(){ var p=pm2(); return S.type+', '+(S.kleur===ADVIES?'kleur nog niet gekozen':S.kleur)+(p!==null?' (vanaf '+eur(p,true)+' per m²)':''); }
+function blokken(){
+  var m=m2(), p=indicatie();
+  return [['situatie','Situatie',[['Situatie',S.situatie+(nieuw()?'':', merk '+(S.merk||'onbekend'))]]],
+          ['lamellen','Lamellen',[['Lamellen',lamelTekst()]]],
+          ['zwembad','Zwembad',[['Vorm',S.vorm],['Binnenmaat',maatTekst()],['Oppervlakte',m===null?'Volgt in je voorstel':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²']]],
+          [nieuw()?'oprollen':'situatie','Oprollen',[['Oproller',oprolTekst()]]],
+          ['installatie','Installatie',[['Installatie',instTekst()]]],
+          ['','Prijsindicatie',[['Vanaf',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw']]]];
+}
+function overzicht(knop){
+  var ids=stappen().map(function(s){return s.id;});
+  return '<div class="thc-sum">'+blokken().map(function(b){
+    return '<section><header><h3>'+e(b[1])+'</h3>'+(knop&&b[0]?'<button type="button" data-ga="'+ids.indexOf(b[0])+'">Wijzig</button>':'')+'</header><dl>'+
+      b[2].map(function(r){ return '<div><dt>'+e(r[0])+'</dt><dd>'+e(r[1])+'</dd></div>'; }).join('')+'</dl></section>';
+  }).join('')+'</div><p class="thc-pnoot">Alle bedragen zijn vanaf-prijzen. De exacte prijs staat in je persoonlijke voorstel.</p>';
+}
+function veld(id,label,type,ac,ph,extra){
+  return '<div class="thc-field"><label for="tlc-'+id+'">'+label+'</label><input id="tlc-'+id+'" data-f="'+id+'" type="'+type+'" autocomplete="'+ac+'" placeholder="'+ph+'" value="'+e(S[id])+'"'+(extra||'')+'>'+(fout[id]?'<span class="thc-err">'+fout[id]+'</span>':'')+'</div>';
+}
+function maatVelden(){
+  var m=m2(), lp=lamelPrijs(), h='<fieldset class="thc-q"><legend>Binnenmaat in cm</legend><div class="thc-maten">';
+  h+=veld('lengte','Lengte (L) <small>incl. trap</small>','text','off','bijv. 800',' inputmode="numeric" data-maat="1"');
+  h+=veld('breedte','Breedte (B)','text','off','bijv. 400',' inputmode="numeric" data-maat="1"');
+  h+='</div><p class="thc-hint">Hele centimeters, dus 8 meter is 800.</p>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'');
+  h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
+     '<span>Oppervlakte <b>'+m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(lp===null?'':'<span>Lamellen vanaf <b>'+eur(Math.round(lp))+'</b></span><small>'+e(lamelTekst())+', incl. btw, zonder oproller en installatie</small>'))+'</div>';
+  return h+'</fieldset>';
+}
+function formulier(){
+  return '<h3 class="thc-kop thc-kop1">Je gegevens</h3>'+
+    '<div class="thc-two">'+veld('voornaam','Voornaam','text','given-name','')+veld('achternaam','Achternaam <small>(optioneel)</small>','text','family-name','')+'</div>'+
+    '<div class="thc-two">'+veld('email','E-mailadres','email','email','naam@voorbeeld.nl')+veld('tel','Telefoonnummer <small>(optioneel)</small>','tel','tel','06 12345678')+'</div>'+
+    veld('straat','Straat en huisnummer <small>(optioneel, voor je voorstel)</small>','text','street-address','')+
+    '<div class="thc-two thc-adres">'+veld('plaats','Plaats <small>(optioneel)</small>','text','address-level2','')+veld('postcode','Postcode','text','postal-code','1234 AB')+'</div>'+
+    '<div class="thc-field"><label for="tlc-land">Land</label><select id="tlc-land" data-f="land" autocomplete="country-name">'+['Nederland','België'].map(function(l){return '<option'+(S.land===l?' selected':'')+'>'+l+'</option>';}).join('')+'</select></div>'+
+    '<div class="thc-field"><label for="tlc-wensen">Wil je alvast iets aan ons doorgeven? <small>(optioneel)</small></label><textarea id="tlc-wensen" data-f="wensen" rows="3" placeholder="Bijvoorbeeld: het zwembad heeft een skimmer aan de korte kant.">'+e(S.wensen)+'</textarea></div>'+
+    '<h3 class="thc-kop">Jouw samenstelling</h3>'+overzicht(true);
+}
+function inhoud(id){
+  var h='';
+  if(id==='situatie'){
+    h+='<div class="thc-cards">'+kaart('situatie','Compleet lamellendek','<b>Compleet lamellendek</b><small>Nieuwe situatie: lamellen, oproller en desgewenst installatie.</small>')+
+       kaart('situatie','Vervanglamellen','<b>Vervanglamellen</b><small>Bestaande situatie: nieuwe lamellen voor je huidige oproller.</small>')+'</div>';
+    if(!nieuw()) h+='<fieldset class="thc-q" style="margin-top:26px"><legend>Welk merk lamellen wil je vervangen?</legend><div class="thc-list">'+MERKEN.map(function(m){return rij('merk',m,{adv:m.indexOf('Weet')>0});}).join('')+'</div>'+(fout.merk?'<p class="thc-err">'+fout.merk+'</p>':'')+'</fieldset>';
+  }
+  if(id==='lamellen') h+='<div class="thc-cards">'+TYPES.map(typeKaart).join('')+'</div>';
+  if(id==='kleur'){
+    var t=T();
+    h+='<fieldset class="thc-q"><legend>'+e(S.type)+'</legend><div class="thc-list">'+kleuren().map(function(k){return rij('kleur',k,{beeld:S.type+'|'+k,label:lab(S.type+'|'+k),prijs:[eur(t.kleuren[k],true),'vanaf per m²']});}).join('')+
+      rij('kleur',ADVIES,{adv:true,sub:'Een specialist adviseert je, of bestel de sample kit'})+'</div></fieldset>';
+    h+='<div class="thc-tip">Lamellen eerst zien en voelen? <a href="'+SAMPLE+'" target="_blank" rel="noopener">Bestel de sample kit</a> of kom langs in onze showroom in Spijk.</div>';
+  }
+  if(id==='zwembad') h+='<fieldset class="thc-q"><legend>Vorm</legend><div class="thc-list">'+VORMEN.map(function(v){return rij('vorm',v,{svg:vormSvg(v,false),adv:v==='Andere vorm',sub:v==='Andere vorm'?'Vertel bij je gegevens hoe je zwembad eruitziet':''});}).join('')+'</div></fieldset>'+maatVelden();
+  if(id==='oprollen'){
+    h+='<fieldset class="thc-q"><legend>Type oprolsysteem</legend><div class="thc-list">'+
+      rij('systeem','Bovengronds systeem',{foto:true,sub:'Alleen bij een volledig ingegraven zwembad'})+
+      rij('systeem','Onderwater buismotor',{sub:'Er moet een nis in het zwembad zitten'})+
+      rij('systeem',ADVIES,{adv:true,sub:'Een specialist adviseert je'})+'</div></fieldset>';
+    if(S.systeem==='Bovengronds systeem') h+='<fieldset class="thc-q"><legend>Oproller</legend><div class="thc-list">'+Object.keys(INSTELLINGEN.oprollers).map(function(o){return rij('oproller',o,{prijs:[eur(INSTELLINGEN.oprollers[o]),'vanaf']});}).join('')+
+      rij('oproller',ADVIES,{adv:true,sub:'Wat een keuze! Een specialist adviseert je persoonlijk'})+'</div></fieldset>';
+  }
+  if(id==='installatie'){
+    h+='<fieldset class="thc-q"><legend>Wie installeert?</legend><div class="thc-list">'+
+      rij('installatie','zelf',{svg:ICOON.zelf,naam:'Ik installeer zelf',sub:'Met onze hulp op afstand'})+
+      rij('installatie','partner',{svg:ICOON.partner,naam:'Inclusief installatie',sub:'Door een van onze partners',prijs:[eur(INSTELLINGEN.installatie),'vanaf']})+'</div></fieldset>'+
+      '<fieldset class="thc-q"><legend>Extra <small>meerdere keuzes mogelijk</small></legend><div class="thc-list">'+
+      rij('inmeten','1',{check:true,svg:ICOON.inmeten,naam:'Inmeten van het zwembad',sub:'Een partner meet je zwembad precies in',prijs:[eur(INSTELLINGEN.inmeten),'vanaf']})+
+      (nieuw()?'':rij('afvoeren','1',{check:true,svg:ICOON.afvoeren,naam:'Afvoeren oude lamellen',sub:'Wij nemen je oude lamellen mee',prijs:[eur(INSTELLINGEN.afvoeren),'vanaf']}))+'</div></fieldset>';
+  }
+  if(id==='overzicht') h+=formulier()+'<ul class="thc-usp thc-gerust"><li>Gratis en vrijblijvend</li><li>Persoonlijk voorstel op maat</li></ul>';
+  return h;
+}
+
+function render(){
+  var sc='.thc-main,.thc-stage,.thc-panel', ST=stappen();
+  if(stap>ST.length-1) stap=ST.length-1;
+  if(klaar){
+    root.innerHTML='<div class="thc-done" tabindex="-1"><div class="thc-done-in">'+(INSTELLINGEN.verzenden?'':'<div class="thc-test"><b>Testmodus:</b> deze aanvraag is niet echt verstuurd.</div>')+
+      '<div class="thc-vink" aria-hidden="true">✓</div><h2>Bedankt'+(S.voornaam?', '+e(S.voornaam):'')+'! Je aanvraag is verstuurd.</h2>'+
+      '<ol class="thc-next"><li><span>Een zwembadspecialist van Toppy bekijkt je samenstelling.</span></li>'+
+      '<li><span>Je krijgt een persoonlijk voorstel op maat'+(S.email?' op <b>'+e(S.email)+'</b>':'')+'.</span></li>'+
+      '<li><span>Samen controleren we de exacte maat, voordat je bestelt.</span></li></ol>'+
+      '<h3 class="thc-kop">Jouw samenstelling</h3>'+overzicht(false)+
+      (APP?'<button type="button" class="thc-btn thc-go" data-a="sluiten">Sluiten</button>':'')+'</div></div>';
+    root.querySelector('.thc-done').focus({preventScroll:true});
+    if(!APP&&root.getBoundingClientRect().top<0) root.scrollIntoView({block:'start'});
+    return; }
+  var act=document.activeElement, actF=act&&root.contains(act)&&act.getAttribute('data-f'), pos=actF&&act.tagName!=='SELECT'?act.selectionStart:null;
+  var oud=bovenaan?[]:[].map.call(root.querySelectorAll(sc),function(x){return x.scrollTop;}); bovenaan=false;
+  var st=ST[stap], h='', p=indicatie();
+  if(!INSTELLINGEN.verzenden) h+='<div class="thc-test"><b>Testmodus:</b> aanvragen worden nog niet verstuurd.</div>';
+  h+='<nav class="thc-steps" aria-label="Stappen">'+ST.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
+  h+='<div class="thc-main">'+podium()+'<section class="thc-panel"><h2>'+st.titel+'</h2><p class="thc-lead">'+st.lead+'</p>'+inhoud(st.id)+'</section></div>';
+  var kz=[S.situatie==='Vervanglamellen'?'Vervanglamellen':'',S.type,S.kleur!==ADVIES?S.kleur:'',m2()!==null?m2().toLocaleString('nl-NL',{maximumFractionDigits:1})+' m²':''].filter(Boolean).join(' · ');
+  h+='<div class="thc-foot">'+(stap>0?'<button type="button" class="thc-btn thc-back" data-a="terug">Vorige</button>':'')+
+     (st.contact?'<div class="thc-keuze"><b>Gratis en vrijblijvend</b> · persoonlijk voorstel op maat</div>':'<div class="thc-keuze"><b>Jouw keuze:</b> '+e(kz)+'</div>')+
+     '<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(pm2()||vanafAlles(),true)+' p/m²</b>':'indicatie vanaf<b>'+eur(Math.round(p))+'</b>')+'</div>'+
+     '<button type="button" class="thc-btn thc-go" data-a="verder"'+(bezig?' disabled':'')+'>'+(st.contact?(bezig?'Bezig met versturen…':'Vraag gratis voorstel aan'):'Volgende<span class="thc-wat">: '+ST[stap+1].kort+'</span>')+'</button></div>';
+  root.innerHTML=h;
+  [].forEach.call(root.querySelectorAll(sc),function(x,i){ if(oud[i]) x.scrollTop=oud[i]; });
+  if(actF){ var n=root.querySelector('[data-f="'+actF+'"]'); if(n){ n.focus({preventScroll:true}); if(pos!==null) try{ n.setSelectionRange(pos,pos); }catch(x){} } }
+  var nu=root.querySelector('.thc-step.is-now'); if(nu) nu.parentNode.scrollLeft=Math.max(0,nu.offsetLeft-40);
+  root.querySelectorAll('img[data-src]').forEach(function(im){ im.onerror=function(){ kapot[im.getAttribute('data-src')]=1; render(); }; });
+}
+function lees(){ root.querySelectorAll('[data-f]').forEach(function(el){ S[el.getAttribute('data-f')]=el.value.trim(); }); }
+function ga(n){ lees(); laatst=null; fout={}; var ST=stappen(); stap=Math.max(0,Math.min(ST.length-1,n)); verst=Math.max(verst,stap); bovenaan=true; render(); meld('stap',{stap:stap+1,naam:ST[stap].kort});
+  if(!APP&&root.getBoundingClientRect().top<0) root.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+/* ---------- versturen naar JotForm 223043516146347 ---------- */
+// Elk antwoord gaat naar het gewone veld en naar het verborgen "(connectie)"-veld ernaast. In het
+// formulier vult JotForm die connectievelden zelf (rekenregel {veld}); bij een directe inzending
+// gebeurt dat niet, dus vullen we ze hier, als leesbare tekst zonder plaatjeslink.
+function schoon(w){ return String(w).split('|').slice(0,-1).join('|')||w; }
+function velden(){
+  var v={}, m=m2(), p=indicatie(), kl=JW.kleur[S.type], pol=S.type!=='PVC lamellen';
+  v['formID']=FORM_ID; v['simple_spc']=FORM_ID+'-'+FORM_ID; v['website']='';
+  var nu=Date.now(); v['submitSource']='form'; v['submitDate']=String(nu); v['buildDate']=String(nu);
+  v['jsExecutionTracker']='build-date-'+nu+'=>init-started:'+nu+'=>submit-validation-passed:'+nu;
+  v['event_id']=nu+'_'+FORM_ID+'_'+Math.random().toString(36).slice(2,9);
+  function zet(veld,con,w,tekst){ if(w==null||w==='') return; v[veld]=w; if(con) v[con]=tekst!=null?tekst:w; }
+  zet('q7_waarvanOntvang[]','q138_waarvanOntvang138',JW.situatie[S.situatie],schoon(JW.situatie[S.situatie]));
+  if(!nieuw()) zet('q137_welkMerk','q139_welkMerk139',S.merk);
+  zet('q121_welkeVorm[]','q140_welkeVorm140',JW.vorm[S.vorm],schoon(JW.vorm[S.vorm]));
+  if(nieuw()){ var sy=JW.systeem[S.systeem]||JW.systeemAnders; zet('q131_typEen[]','q141_watVoor',sy,schoon(sy)); }
+  var mat=pol?JW.materiaal.Polycarbonaat:JW.materiaal.PVC; zet('q132_ltspanStylefontsize[]','q142_vanWelke',mat,schoon(mat));
+  if(pol) zet('q135_welkKwaliteitsniveau','q143_welkeKwaliteitsniveau',JW.kwaliteit[S.type]);
+  var kw=kl[S.kleur]||JW.kleurAdvies; zet(kl.veld,kl.con,kw,schoon(kw));
+  if(nieuw()&&S.systeem==='Bovengronds systeem'){ var op=JW.oproller[S.oproller]||JW.kleurAdvies; zet('q45_vanWelke45[]','q147_vanWelke147',op,schoon(op)); }
+  // installatie: meerkeuze, dus elke keuze als eigen waarde met dezelfde naam (zie verstuur)
+  var inst=[JW.installatie[S.installatie]]; if(S.inmeten) inst.push(JW.installatie.inmeten); if(S.afvoeren&&!nieuw()) inst.push(JW.installatie.afvoeren);
+  v['q134_installatie[]']=inst; v['q148_installatieconnectie']=inst.map(schoon).join('\n');
+  zet('q61_watIs61','q149_watIs',String(getal(S.lengte)||''));
+  zet('q62_watIs62','q150_watIs150',String(getal(S.breedte)||''));
+  zet('q3_emaillead','q151_emailconnectie',S.email);
+  v['q1_leadname[first]']=S.voornaam; v['q1_leadname[last]']=S.achternaam; v['q152_watIs152']=[S.voornaam,S.achternaam].filter(Boolean).join(' ');
+  v['q77_mogenWij77[addr_line1]']=S.straat; v['q77_mogenWij77[postal]']=S.postcode; v['q77_mogenWij77[city]']=S.plaats; v['q77_mogenWij77[country]']=S.land;
+  v['q153_mogenWij153']=[S.straat,[S.postcode,S.plaats].filter(Boolean).join(' '),S.land].filter(Boolean).join(', ');
+  zet('q86_mogenWij','q157_mogenWij157',S.tel);
+  // wensen van de klant, plus in het connectieveld de samenstelling, prijsindicatie en herkomst
+  v['q67_watisWil67']=S.wensen;
+  v['q158_watWil']=[S.wensen||'-','','VIA DE CONFIGURATOR',
+    'Lamellen: '+lamelTekst(),'Binnenmaat: '+maatTekst(),'Oppervlakte: '+(m===null?'onbekend':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²'),
+    'Oprollen: '+oprolTekst(),'Installatie: '+instTekst(),
+    'Prijsindicatie: '+(p===null?'n.v.t.':'vanaf '+eur(Math.round(p))+' incl. btw'),'','HERKOMST',herkomstTekst()].join('\n');
+  if(INSTELLINGEN.herkomstVeld) v[INSTELLINGEN.herkomstVeld]=herkomstTekst();
+  return v;
+}
+function verstuur(){
+  var v=velden();
+  if(!INSTELLINGEN.verzenden){ if(window.console) console.log('[lamellen-configurator] testmodus, niet verstuurd:', v); klaar=true; render(); return; }
+  bezig=true; render();
+  var naam='tlc-frame-'+Date.now(), fr=document.createElement('iframe'); fr.name=naam; fr.style.display='none';
+  // sandbox zonder scripts: de bedankpagina van JotForm laat de pagina niet wegspringen
+  fr.setAttribute('sandbox',''); document.body.appendChild(fr);
+  var f=document.createElement('form'); f.method='post'; f.action=FORM_URL; f.target=naam; f.acceptCharset='utf-8'; f.style.display='none';
+  Object.keys(v).forEach(function(k){ [].concat(v[k]).forEach(function(w){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=w; f.appendChild(i); }); });
+  document.body.appendChild(f);
+  // echt=true: JotForm heeft geantwoord. Na 15 s zonder antwoord wel het bedankscherm, maar geen conversie.
+  var af=function(echt){ if(klaar) return; bezig=false; klaar=true; render(); if(!echt) return;
+    if(window.dataLayer) window.dataLayer.push({event:'lamellen_configurator_aanvraag', uitvoering:S.type});
+    meld('verzonden',{uitvoering:S.type});
+    if(!IFRAME) setTimeout(function(){ location.href=bedankt(); },1500); };
+  fr.onload=function(){ af(true); }; setTimeout(function(){ af(false); },15000);
+  f.submit();
+}
+
+root.addEventListener('click',function(ev){
+  var o=ev.target.closest('.thc-row,.thc-card');
+  if(o){ lees(); var k=o.getAttribute('data-k'), val=o.getAttribute('data-v');
+    if(o.hasAttribute('data-check')) S[k]=!S[k];
+    else { S[k]=val; laatst=val; }
+    if(k==='type'&&kleuren().indexOf(S.kleur)<0) S.kleur=kleuren()[0];
+    if(k==='situatie'&&nieuw()) S.afvoeren=false;
+    if(k==='situatie'||k==='merk') fout={};
+    render(); return; }
+  var g=ev.target.closest('[data-ga]'); if(g&&!g.disabled) return ga(+g.getAttribute('data-ga'));
+  var a=ev.target.closest('[data-a]'); if(!a) return;
+  if(a.getAttribute('data-a')==='sluiten') return sluit();
+  if(a.getAttribute('data-a')==='terug') return ga(stap-1);
+  lees();
+  var id=stapId();
+  if(id==='situatie'&&!nieuw()&&!S.merk){ fout={merk:'Kies het merk van je huidige lamellen (of "Anders/Weet ik niet").'}; return render(); }
+  if(id==='zwembad'&&!maatOk()){ fout={maat:'Vul lengte en breedte in hele centimeters in (minimaal 100 cm), dan rekenen we de oppervlakte uit.'}; return render(); }
+  if(!stappen()[stap].contact) return ga(stap+1);
+  fout={};
+  if(!S.voornaam) fout.voornaam='Vul je voornaam in.';
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(S.email)) fout.email='Vul een geldig e-mailadres in, dan kunnen we je voorstel sturen.';
+  if(Object.keys(fout).length) return render();
+  verstuur();
+});
+// maten: live oppervlakte en prijs bijwerken tijdens het typen; land meteen bewaren
+root.addEventListener('input',function(ev){ if(ev.target.getAttribute('data-maat')){ lees(); render(); } });
+root.addEventListener('change',function(ev){ if(ev.target.tagName==='SELECT') lees(); });
+if(APP) document.addEventListener('keydown',function(ev){ if(ev.key==='Escape') sluit(); });
+if(APP&&!IFRAME) document.addEventListener('click',function(ev){ if(ev.target===document.body||ev.target===document.documentElement) sluit(); });
+render(); meld('geladen');
+})();
+</script>
+</body></html>
