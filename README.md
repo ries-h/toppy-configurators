@@ -11,8 +11,8 @@ Losse configuratorpagina's voor toppy.nl, gehost via GitHub Pages.
   Typefoto's: `winternet-budget.jpeg`, `winternet-basis.jpeg`, `winternet-deluxe.jpeg` in de root.
 - `lamellendek.html`: configurator lamellendek (situatie nieuw/vervangen, lamellen, kleur, vorm en
   maten, oprollen, installatie, gegevens). Vervangt het invulscherm van JotForm "Aanvraag formulier
-  lamellen" (223043516146347) en stuurt de aanvraag naar datzelfde formulier, inclusief de verborgen
-  "(connectie)"-velden, zodat mails en het Freshdesk-ticket gelijk blijven. Foto's in `lamellendek/`.
+  lamellen" (223043516146347) en stuurt de aanvraag naar JotForm "Offerte aanvragen lamellendek"
+  (262993449548375), elk gegeven in een eigen verborgen veld (incl. Herkomst). Foto's in `lamellendek/`.
 - `popup.js`: opent alle configurators als venster over een toppy.nl-pagina.
 - `stavenafdekking.html`: configurator stavenafdekking (uitvoering, vorm en maten,
   kleur, oprollen, gegevens). Rekent een prijsindicatie zoals de configurator op

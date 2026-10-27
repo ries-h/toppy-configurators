@@ -10,9 +10,9 @@
 </head><body>
 <!-- ============================================================
      Toppy configurator lamellendek (2026-10-27)
-     Vervangt het JotForm "Aanvraag formulier lamellen" (223043516146347) als invulscherm,
-     maar stuurt de aanvraag naar datzelfde formulier, met dezelfde velden en de verborgen
-     "(connectie)"-velden. Zo blijven de JotForm-mails en het Freshdesk-ticket zoals ze waren.
+     Vervangt het JotForm "Aanvraag formulier lamellen" (223043516146347) als invulscherm.
+     Aanvragen gaan naar JotForm 262993449548375 (Offerte aanvragen lamellendek, 2026-10-27):
+     elk gegeven in een eigen verborgen veld, zodat het Freshdesk-ticket per vraag een label toont.
      Stappen: situatie (nieuw of vervangen), lamellen, kleur, zwembad, oprollen (alleen nieuw),
      installatie, overzicht + gegevens.
      Prijsindicatie: lengte x breedte (binnenmaat, lengte incl. trap) x vanaf-prijs per m² van de
@@ -238,10 +238,9 @@ html.thc-los #toppy-lc.thc-app{width:min(1120px,100%);height:min(880px,calc(100v
 var INSTELLINGEN = {
   // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
   verzenden: true,
-  // Verborgen JotForm-veld "Herkomst" (gclid, utm, pagina) voor Freshdesk, bijv. 'q160_herkomst'.
-  // Leeg = de herkomst staat onderaan "wil je alvast iets doorgeven? (connectie)" (q158).
-  herkomstVeld: '',
-  // Lamellen: vanaf-prijs per m² incl. btw per kleur (lamellenpagina + JotForm 223043516146347).
+  // Verborgen JotForm-veld "Herkomst" (gclid, utm, pagina) voor Freshdesk. Leeg = alleen in q18.
+  herkomstVeld: 'q34_herkomst',
+  // Lamellen: vanaf-prijs per m² incl. btw per kleur (lamellenpagina + oud JotForm 223043516146347).
   lamellen: {
     "Solar polycarbonaat": { kort: "Solar", levensduur: "10 tot 15 jaar", garantie: "5 jaar", warmte: "Verwarmt je water met de zon", sterkte: "Bestand tegen flinke hagel",
       tekst: "Dekt je bad af en verwarmt je water gratis met de zon. De slimste keuze voor de lange termijn.",
@@ -304,61 +303,10 @@ var INSTELLINGEN = {
 };
 /* ================= Hieronder niets aanpassen ================= */
 
-var FORM_ID = '223043516146347';
+var FORM_ID = '262993449548375';
 var FORM_URL = 'https://eu-submit.jotform.com/submit/' + FORM_ID;
 var ADVIES = 'Weet ik nog niet';
 var SAMPLE = 'https://www.toppy.nl/product/14538/aqs-polycarbonaat-zwembad-lamellen-sample-kit.html';
-var JF = 'https://www.jotform.com/uploads/Stef_stef/form_files/', JT = 'https://www.jotform.com/uploads/Toppy_Jotform/form_files/';
-var JF_ADV = JF + 'baddelivery copy 8.6284fba8016439.86116449.png';
-// Exacte antwoordwaarden van JotForm 223043516146347 (afbeeldingskeuze = "tekst|plaatje").
-// Alleen met precies deze waarden ziet JotForm (en het Freshdesk-ticket) de keuze als aangevinkt.
-var JW = {
-  situatie: { "Compleet lamellendek": "Compleet lamellendek (Nieuwe situatie)|" + JF + "Lamellendek.636121ccbbc8c9.27603379.jpg",
-              "Vervanglamellen": "Vervanglamellen (Bestaande situatie)|" + JF + "Vervang%20lamellen.636131fb05b576.59488754.jpg" },
-  vorm: { "Geen trap": "Geen uitwendige trap|" + JF + "Rechthoek.6398688c3b9804.28160041.png",
-          "Romeinse trap": "Romeinse trap|" + JF + "Romeins.63986f9fed1414.81577846.png",
-          "Uitwendige trap": "Uitwendige trap|" + JF + "Kopse%20kant.639868952ce452.84790299.png",
-          "Romeinse trap, lange zijde": "Romeinse trap, lange zijde|" + JF + "Romeins%20%281%29.639871004dd2c8.67066223.png",
-          "Uitwendige trap, lange zijde": "Uitwendige trap, lange zijde|" + JF + "Lange%20zijde.6398689e1773d8.01978510.png",
-          "Andere vorm": "Andere vorm|" + JF_ADV },
-  systeem: { "Bovengronds systeem": "Bovengronds systeem|" + JF + "contura.6361264a9e1685.36794675.webp",
-             "Onderwater buismotor": "Onderwater Buismotor systeem|" + JF + "nis.63cf9577dd1e35.73537839.JPG" },
-  systeemAnders: "Anders|" + JF_ADV,
-  materiaal: { "PVC": "PVC | vanaf €69,95|" + JF + "Enkel%20lamellen.63613256da4638.44258699.JPG",
-               "Polycarbonaat": "Polycarbonaat | vanaf €78,-|" + JF + "lamellen%20feel.6361326708c046.54298699.jpg",
-               "Advies": "Ik laat me graag informeren|" + JF + "baddelivery%20copy%204.62695568992c65.70070858.png" },
-  kwaliteit: { "Solar polycarbonaat": "Hoogwaardige kwaliteit: verwachte levensduur 10 tot 15 jaar (Aanbevolen)",
-               "Polycarbonaat budget": "Instapkwaliteit: verwachte levensduur 2 tot 5 jaar" },
-  kleur: {
-    "PVC lamellen": { veld: 'q43_vanWelke43[]', con: 'q144_vanWelk144',
-      "Grijs": "AQS PVC Grijs | vanaf €69,95|" + JF + "900_1131_lichtgrijs_1.636211d0e92673.33108011.webp",
-      "Wit": "AQS PVC Wit | vanaf €69,95|" + JT + "wit.6a5f6afa988721.94469421.jpg" },
-    "Solar polycarbonaat": { veld: 'q133_ltspanStylefontsize133[]', con: 'q145_vanWelk145',
-      "Blauw": "AQS Polycarbonaat Solar Blauw (meest gekozen) | vanaf €119,95|" + JF + "solar_blue_1.6361344a2709e2.79721596.jpg",
-      "Transparant": "AQS Polycarbonaat Solar Transparant | vanaf €119,95|" + JF + "solar_transparant_1.6362139cd6dc23.37978624.jpg",
-      "Zilver": "AQS Polycarbonaat Solar Zilver | vanaf €129,95|" + JF + "solar_silver_1.636213d99594c2.52474707.jpg",
-      "Graphite": "AQS Polycarbonaat Solar Graphite | vanaf €139,95|" + JF + "Sample_Lamel_hoofdafbeelding.65b37649eff725.61207200.png",
-      "Gold": "AQS Polycarbonaat Solar Gold | vanaf €139,95|" + JF + "solar_gold_1.636213f366d346.69302857.jpg" },
-    "Polycarbonaat budget": { veld: 'q136_vanWelk[]', con: 'q146_vanWelk146',
-      "Blauw": "AQS Polycarbonaat Solar Blauw | vanaf €78,-|" + JT + "blauw.6a1d88baefa418.82340841.png",
-      "Graphite": "AQS Polycarbonaat Solar Graphite | vanaf €78,-|" + JT + "graphite.6a1d88c5a44c90.92214441.jpg",
-      "Zilver": "AQS Polycarbonaat Solar Zilver | vanaf €78,-|" + JT + "zilver.6a1d88d44a9422.75382758.jpg" }
-  },
-  kleurAdvies: "Wat een keuze(stress)! Graag heb ik hier nog persoonlijk advies over.|" + JF_ADV,
-  oproller: { "Open Manu": "Open Manu | vanaf €1.495,-|" + JF + "manu_produit_1.6231c91867a2e1.50992011.webp",
-    "Open Classic": "Open Classic | vanaf €2.645,-|" + JF + "open_classic_produit.6231c84c1d0f54.52987317.webp",
-    "AQS Automatisch oprolsysteem": "AQS Automatisch oprolsysteem | vanaf €2.895,-|" + JF + "AQS.663a015e7aacd9.45862697.JPG",
-    "Open Aero": "Open Aero | vanaf €3.105,-|" + JF + "open_aero_produit.6231c9287602f0.89949375.webp",
-    "Tixit": "Tixit | vanaf €2.995,-|" + JF + "tixit_ambiance_2019_large%20(1).6231c97304b752.12198744.webp",
-    "Contura": "Contura | vanaf €3.395,-|" + JF + "Contura-L.620e31cb4d9520.18642588.jpg",
-    "Open Banc Classic": "Open Banc Classic | vanaf €4.995,-|" + JF + "banc_classic_produit_wit.620e3a26100665.21040607.webp",
-    "Open Banc Classic Houtkleur": "Open Banc Classic Houtkleur | vanaf €5.599,-|" + JF + "banc_classic_produit.62419d7b9cf0d6.77715635.jpg",
-    "Banc Design": "Banc Design | vanaf €6.995,-|" + JF + "banc_d_sign_produit.62419d895151b5.61575061.jpg" },
-  installatie: { zelf: "Ik installeer alles zelf, met jullie hulp op afstand|" + JF + "Montage.65783d61c45438.61938811.webp",
-    partner: "Inclusief installatie - vanaf €400,-|" + JF + "Icoon-Servicemonteur.65783d6ac69ef5.06693682.jpg",
-    afvoeren: "+ Afvoeren oude lamellen - vanaf €150,-|" + JF + "pictogram-bord-afvalbak-wit.65783daa843258.37460983.png" }
-};
-
 var SITUATIES = ['Compleet lamellendek', 'Vervanglamellen'];
 var MERKEN = ['AQS', 'Aquadeck', 'Starline/Roldeck', 'Anders/Weet ik niet'];
 var TYPES = ['Solar polycarbonaat', 'Polycarbonaat budget', 'PVC lamellen'];
@@ -619,44 +567,53 @@ function lees(){ root.querySelectorAll('[data-f]').forEach(function(el){ S[el.ge
 function ga(n){ lees(); laatst=null; fout={}; var ST=stappen(); stap=Math.max(0,Math.min(ST.length-1,n)); verst=Math.max(verst,stap); bovenaan=true; render(); meld('stap',{stap:stap+1,naam:ST[stap].kort});
   if(!APP&&root.getBoundingClientRect().top<0) root.scrollIntoView({behavior:'smooth',block:'start'}); }
 
-/* ---------- versturen naar JotForm 223043516146347 ---------- */
-// Elk antwoord gaat naar het gewone veld en naar het verborgen "(connectie)"-veld ernaast. In het
-// formulier vult JotForm die connectievelden zelf (rekenregel {veld}); bij een directe inzending
-// gebeurt dat niet, dus vullen we ze hier, als leesbare tekst zonder plaatjeslink.
-function schoon(w){ return String(w).split('|').slice(0,-1).join('|')||w; }
+/* ---------- versturen naar JotForm 262993449548375 ---------- */
+// Elk gegeven in een eigen verborgen veld (Freshdesk toont ze met een vet label), alles samen
+// nog eens in "Samenstelling configurator" (q18) als reserve.
 function velden(){
-  var v={}, m=m2(), p=indicatie(), kl=JW.kleur[S.type], pol=S.type!=='PVC lamellen';
+  var v={}, m=m2(), p=indicatie();
   v['formID']=FORM_ID; v['simple_spc']=FORM_ID+'-'+FORM_ID; v['website']='';
+  // dezelfde verborgen velden als het echte JotForm-formulier, zodat JotForm de inzending als gewone
+  // formulierinzending ziet en ook de integraties (Freshdesk) en e-mails uitvoert
   var nu=Date.now(); v['submitSource']='form'; v['submitDate']=String(nu); v['buildDate']=String(nu);
   v['jsExecutionTracker']='build-date-'+nu+'=>init-started:'+nu+'=>submit-validation-passed:'+nu;
   v['event_id']=nu+'_'+FORM_ID+'_'+Math.random().toString(36).slice(2,9);
-  function zet(veld,con,w,tekst){ if(w==null||w==='') return; v[veld]=w; if(con) v[con]=tekst!=null?tekst:w; }
-  zet('q7_waarvanOntvang[]','q138_waarvanOntvang138',JW.situatie[S.situatie],schoon(JW.situatie[S.situatie]));
-  if(!nieuw()) zet('q137_welkMerk','q139_welkMerk139',S.merk);
-  zet('q121_welkeVorm[]','q140_welkeVorm140',JW.vorm[S.vorm],schoon(JW.vorm[S.vorm]));
-  if(nieuw()){ var sy=JW.systeem[S.systeem]||JW.systeemAnders; zet('q131_typEen[]','q141_watVoor',sy,schoon(sy)); }
-  var mat=pol?JW.materiaal.Polycarbonaat:JW.materiaal.PVC; zet('q132_ltspanStylefontsize[]','q142_vanWelke',mat,schoon(mat));
-  if(pol) zet('q135_welkKwaliteitsniveau','q143_welkeKwaliteitsniveau',JW.kwaliteit[S.type]);
-  var kw=kl[S.kleur]||JW.kleurAdvies; zet(kl.veld,kl.con,kw,schoon(kw));
-  if(nieuw()&&S.systeem==='Bovengronds systeem'){ var op=JW.oproller[S.oproller]||JW.kleurAdvies, opp=INSTELLINGEN.oprollers[S.oproller];
-    // connectieveld met de actuele prijs (het JotForm-antwoord zelf moet letterlijk de oude optie blijven)
-    zet('q45_vanWelke45[]','q147_vanWelke147',op,opp?S.oproller+' | vanaf '+eur(opp):schoon(op)); }
-  // installatie: meerkeuze, dus elke keuze als eigen waarde met dezelfde naam (zie verstuur)
-  var inst=[JW.installatie[S.installatie]]; if(S.afvoeren&&!nieuw()) inst.push(JW.installatie.afvoeren);
-  v['q134_installatie[]']=inst; v['q148_installatieconnectie']=inst.map(schoon).join('\n');
-  zet('q61_watIs61','q149_watIs',String(getal(S.lengte)||''));
-  zet('q62_watIs62','q150_watIs150',String(getal(S.breedte)||''));
-  zet('q3_emaillead','q151_emailconnectie',S.email);
-  v['q1_leadname[first]']=S.voornaam; v['q1_leadname[last]']=S.achternaam; v['q152_watIs152']=[S.voornaam,S.achternaam].filter(Boolean).join(' ');
-  v['q77_mogenWij77[addr_line1]']=S.straat; v['q77_mogenWij77[postal]']=S.postcode; v['q77_mogenWij77[city]']=S.plaats; v['q77_mogenWij77[country]']=S.land;
-  v['q153_mogenWij153']=[S.straat,[S.postcode,S.plaats].filter(Boolean).join(' '),S.land].filter(Boolean).join(', ');
-  zet('q86_mogenWij','q157_mogenWij157',S.tel);
-  // wensen van de klant, plus in het connectieveld de samenstelling, prijsindicatie en herkomst
-  v['q67_watisWil67']=S.wensen;
-  v['q158_watWil']=[S.wensen||'-','','VIA DE CONFIGURATOR',
-    'Lamellen: '+lamelTekst(),'Binnenmaat: '+maatTekst(),'Oppervlakte: '+(m===null?'onbekend':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²'),
-    'Oprollen: '+oprolTekst(),'Installatie: '+instTekst(),
-    'Prijsindicatie: '+(p===null?'n.v.t.':'vanaf '+eur(Math.round(p))+' incl. btw'+excl()),'','HERKOMST',herkomstTekst()].join('\n');
+  var naam=[S.voornaam,S.achternaam].filter(Boolean).join(' ');
+  var adres=[S.straat,[S.postcode,S.plaats].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+  var pm=pm2(), opp=m===null?'Onbekend':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²';
+  var r={
+    naam: naam, email: S.email, tel: S.tel, adres: adres, land: S.land,
+    situatie: nieuw()?'Compleet lamellendek (nieuwe situatie)':'Vervanglamellen (bestaande situatie)',
+    merk: nieuw()?'':(S.merk||'Onbekend'),
+    lamellen: S.type+(pm!==null?' (vanaf '+eur(pm,true)+' per m²)':''),
+    kleur: S.kleur,
+    vorm: S.vorm, maat: maatTekst(), opp: opp,
+    systeem: nieuw()?S.systeem:'Bestaande oproller',
+    oproller: oprolTekst(),
+    installatie: instTekst(),
+    prijs: p===null?'Volgt in het voorstel':'vanaf '+eur(Math.round(p))+' incl. btw'+excl()
+  };
+  v['q20_naam']=r.naam; // Requester Name in Freshdesk
+  v['q19_email']=r.email;
+  v['q21_telefoon']=r.tel;
+  v['q22_adres']=r.adres;
+  v['q31_land']=r.land;
+  v['q23_situatie']=r.situatie;
+  v['q32_merkHuidige']=r.merk;
+  v['q30_lamellen']=r.lamellen;
+  v['q27_kleur']=r.kleur;
+  v['q24_vormZwembad']=r.vorm;
+  v['q25_binnenmaat']=r.maat;
+  v['q26_oppervlakte']=r.opp;
+  v['q33_oprolsysteem']=r.systeem;
+  v['q28_oproller']=r.oproller;
+  v['q35_installatie']=r.installatie;
+  v['q29_prijsindicatie']=r.prijs;
+  v['q16_q16_textarea14']=S.wensen;
+  v['q18_samenstellingConfigurator']=['KLANT','Naam: '+(naam||'-'),'E-mail: '+(S.email||'-'),'Telefoon: '+(S.tel||'-'),'Adres: '+(adres||'-')+', '+S.land,'',
+    'SAMENSTELLING VIA CONFIGURATOR','Situatie: '+r.situatie+(r.merk?', merk '+r.merk:''),'Lamellen: '+r.lamellen,'Kleur: '+r.kleur,
+    'Vorm: '+r.vorm,'Binnenmaat: '+r.maat,'Oppervlakte: '+r.opp,'Oprollen: '+r.oproller,'Installatie: '+r.installatie,'Prijsindicatie: '+r.prijs,
+    '','HERKOMST',herkomstTekst()].join('\n');
   if(INSTELLINGEN.herkomstVeld) v[INSTELLINGEN.herkomstVeld]=herkomstTekst();
   return v;
 }
@@ -668,7 +625,7 @@ function verstuur(){
   // sandbox zonder scripts: de bedankpagina van JotForm laat de pagina niet wegspringen
   fr.setAttribute('sandbox',''); document.body.appendChild(fr);
   var f=document.createElement('form'); f.method='post'; f.action=FORM_URL; f.target=naam; f.acceptCharset='utf-8'; f.style.display='none';
-  Object.keys(v).forEach(function(k){ [].concat(v[k]).forEach(function(w){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=w; f.appendChild(i); }); });
+  Object.keys(v).forEach(function(k){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v[k]; f.appendChild(i); });
   document.body.appendChild(f);
   // echt=true: JotForm heeft geantwoord. Na 15 s zonder antwoord wel het bedankscherm, maar geen conversie.
   var af=function(echt){ if(klaar) return; bezig=false; klaar=true; render(); if(!echt) return;
