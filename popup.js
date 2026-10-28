@@ -7,7 +7,8 @@
   Knoppen met data-open-offerte / data-open-configurator openen de stavenafdekking.
   Zonder dit script (of zonder JavaScript) opent dezelfde link de configurator als losse pagina.
   Sluiten: kruisje in de configurator, Esc, of naast het venster klikken.
-  Meten (2026-10-27): na een verzonden aanvraag gaat de pagina naar /bedankt-offerte-aanvraag, waar
+  Meten (2026-10-27): na een verzonden aanvraag gaat de pagina naar /bedankt-offerte-aanvraag (op toppy.be
+  voor Belgische klanten, 2026-10-28), waar
   Tag Manager de offerte-conversie al telt. De herkomst (gclid, utm-tags, landingspagina) gaat via de
   url mee naar de configurator en komt zo in JotForm en Freshdesk.
 */
@@ -25,7 +26,12 @@
         'winternet.html': ['Stel je winternet samen', 'toppy-winternet-configurator', 'winternet_configurator'],
         'lamellendek.html': ['Stel je lamellendek samen', 'toppy-lamellen-configurator', 'lamellen_configurator']
     };
-    var BEDANKT = 'https://www.toppy.nl/bedankt-offerte-aanvraag?configurator=';
+    /* bedankpagina op het domein van de klant: toppy.be als de pop-up op toppy.be staat
+       of als de klant in de configurator België kiest (lamellendek), anders toppy.nl */
+    function bedankt(slug, land) {
+        var be = /toppy\.be$/.test(location.hostname) || land === 'België';
+        return 'https://www.toppy.' + (be ? 'be' : 'nl') + '/bedankt-offerte-aanvraag?configurator=' + slug;
+    }
     var KNOP = '[data-open-offerte],[data-open-configurator]';
     for (var b in CONFIGURATORS) KNOP += ',a[href^="' + MAP + b + '"]';
 
@@ -146,7 +152,7 @@
             /* naar de bedankpagina: daar telt Tag Manager de offerte-conversie (GA4, Meta, Google Ads).
                Kort wachten, zodat de bezoeker het bedankscherm ziet en de tag hierboven kan afgaan. */
             var slug = bestand.replace('.html', '');
-            setTimeout(function () { location.href = BEDANKT + slug; }, 1500);
+            setTimeout(function () { location.href = bedankt(slug, m.land); }, 1500);
         }
     });
 })();

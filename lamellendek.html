@@ -633,7 +633,7 @@ function verstuur(){
   // echt=true: JotForm heeft geantwoord. Na 15 s zonder antwoord wel het bedankscherm, maar geen conversie.
   var af=function(echt){ if(klaar) return; bezig=false; klaar=true; render(); if(!echt) return;
     if(window.dataLayer) window.dataLayer.push({event:'lamellen_configurator_aanvraag', uitvoering:S.type});
-    meld('verzonden',{uitvoering:S.type});
+    meld('verzonden',{uitvoering:S.type, land:S.land});
     if(!IFRAME) setTimeout(function(){ location.href=bedankt(); },1500); };
   fr.onload=function(){ af(true); }; setTimeout(function(){ af(false); },15000);
   f.submit();

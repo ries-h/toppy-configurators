@@ -337,7 +337,9 @@ var HERKOMST=(function(){ var h={}, q;
   return h; })();
 function herkomstTekst(){ var r=[]; for(var k in HERKOMST) r.push(k+': '+HERKOMST[k]); return r.length?r.join('\n'):'Onbekend (direct bezoek)'; }
 // bestaande trigger in Tag Manager: url met "bedankt-offerte-aanvraag" telt als offerte-conversie
-var BEDANKT='https://www.toppy.nl/bedankt-offerte-aanvraag?configurator=winterzeil';
+// Kwam de klant van toppy.be, dan naar de Belgische bedankpagina (zoals bij lamellendek).
+function bedankt(){ var be=/toppy\.be/.test(document.referrer||'')||/toppy\.be/.test(HERKOMST.pagina||HERKOMST.landing||'');
+  return 'https://www.toppy.'+(be?'be':'nl')+'/bedankt-offerte-aanvraag?configurator=winterzeil'; }
 
 function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function eur(n,dec){return '€ '+n.toLocaleString('nl-NL',{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});}
@@ -574,7 +576,7 @@ function verstuur(){
   var af=function(echt){ if(klaar) return; bezig=false; klaar=true; render(); if(!echt) return;
     if(window.dataLayer) window.dataLayer.push({event:'winter_configurator_aanvraag', uitvoering:S.uitvoering}); meld('verzonden',{uitvoering:S.uitvoering});
     // in de pop-up stuurt popup.js de pagina door; losse pagina: zelf doorsturen
-    if(!IFRAME) setTimeout(function(){ location.href=BEDANKT; },1500); };
+    if(!IFRAME) setTimeout(function(){ location.href=bedankt(); },1500); };
   fr.onload=function(){ af(true); }; setTimeout(function(){ af(false); },15000);
   f.submit();
 }
