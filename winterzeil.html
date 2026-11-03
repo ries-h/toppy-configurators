@@ -233,10 +233,12 @@ html.thc-los #toppy-sc.thc-app{width:min(1080px,100%);height:min(860px,calc(100v
 <script>
 (function () {
 /* ================= INSTELLINGEN ================= */
+// ?demo=1 achter de link: demo voor het portfolio van Ries, verstuurt nooit iets en heeft geen sluitknop.
+var DEMO = /[?&]demo=1(&|$)/.test(location.search);
 var INSTELLINGEN = {
   // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
   // Aanvragen gaan naar JotForm 262983013798368 (kopie van Offerte aanvragen winterzeil, 2026-10-26).
-  verzenden: true,
+  verzenden: !DEMO,
   // Verborgen JotForm-veld "Herkomst" (gclid, utm, pagina) voor Freshdesk, bijv. 'q31_herkomst'.
   // Leeg = de herkomst staat alleen onderaan "Samenstelling configurator" (q18).
   herkomstVeld: '',
@@ -483,7 +485,7 @@ function formulier(){
 function render(){
   var sc='.thc-main,.thc-stage,.thc-panel';
   if(klaar){
-    root.innerHTML='<div class="thc-done" tabindex="-1">'+(INSTELLINGEN.verzenden?'':'<div class="thc-test"><b>Testmodus:</b> deze aanvraag is niet echt verstuurd.</div>')+
+    root.innerHTML='<div class="thc-done" tabindex="-1">'+(INSTELLINGEN.verzenden?'':'<div class="thc-test">'+(DEMO?'<b>Demo:</b> in het echt komt deze aanvraag nu bij de klantenservice binnen.':'<b>Testmodus:</b> deze aanvraag is niet echt verstuurd.')+'</div>')+
       '<div class="thc-vink" aria-hidden="true">✓</div><h2>Bedankt'+(S.voornaam?', '+e(S.voornaam):'')+'! Je aanvraag is verstuurd.</h2>'+
       '<ol class="thc-next"><li><span>Een zwembadspecialist van Toppy bekijkt je samenstelling.</span></li>'+
       '<li><span>Je krijgt een persoonlijk voorstel op maat'+(S.email?' op <b>'+e(S.email)+'</b>':'')+'.</span></li></ol>'+
@@ -495,9 +497,9 @@ function render(){
   var act=document.activeElement, actF=act&&root.contains(act)&&act.getAttribute('data-f'), pos=actF?act.selectionStart:null;
   var oud=bovenaan?[]:[].map.call(root.querySelectorAll(sc),function(x){return x.scrollTop;}); bovenaan=false;
   var st=STAPPEN[stap], h='', p=indicatie();
-  if(!INSTELLINGEN.verzenden) h+='<div class="thc-test"><b>Testmodus:</b> aanvragen worden nog niet verstuurd.</div>';
+  if(!INSTELLINGEN.verzenden) h+='<div class="thc-test">'+(DEMO?'<b>Demo:</b> dit is een voorbeeld, er wordt niets verstuurd.':'<b>Testmodus:</b> aanvragen worden nog niet verstuurd.')+'</div>';
   if(!APP) h+='<header class="thc-bar"><h1>Winterzeil <span>· '+e(S.uitvoering)+'</span></h1><div class="thc-vanaf">'+(p===null?'vanaf<b>'+eur(prijsPm(),true)+' p/m²</b>':'indicatie<b>'+eur(Math.round(p))+'</b>')+'</div></header>';
-  h+='<nav class="thc-steps" aria-label="Stappen">'+STAPPEN.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
+  h+='<nav class="thc-steps" aria-label="Stappen">'+STAPPEN.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP&&!DEMO?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
   h+='<div class="thc-main">'+podium()+'<section class="thc-panel"><h2>'+st.titel+'</h2><p class="thc-lead">'+st.lead+'</p>';
   if(stap===0) h+='<div class="thc-cards">'+UITVOERINGEN.map(kaart).join('')+'</div>';
   if(stap===1){ h+='<fieldset class="thc-q"><legend>Vorm</legend><div class="thc-list">'+VORMEN.map(function(x){return rij(x.v,'vorm',{sub:x.geenPrijs?txt(x.v):''});}).join('')+'</div></fieldset>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'')+maatVelden(); }

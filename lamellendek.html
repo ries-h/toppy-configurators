@@ -235,9 +235,11 @@ html.thc-los #toppy-lc.thc-app{width:min(1120px,100%);height:min(880px,calc(100v
 <script>
 (function () {
 /* ================= INSTELLINGEN ================= */
+// ?demo=1 achter de link: demo voor het portfolio van Ries, verstuurt nooit iets en heeft geen sluitknop.
+var DEMO = /[?&]demo=1(&|$)/.test(location.search);
 var INSTELLINGEN = {
   // false = testmodus: er wordt NIETS verstuurd en er staat een gele balk boven de configurator.
-  verzenden: true,
+  verzenden: !DEMO,
   // Verborgen JotForm-veld "Herkomst" (gclid, utm, pagina) voor Freshdesk. Leeg = alleen in q18.
   herkomstVeld: 'q34_herkomst',
   // Lamellen: vanaf-prijs per m² incl. btw per kleur (lamellenpagina + oud JotForm 223043516146347).
@@ -537,7 +539,7 @@ function render(){
   var sc='.thc-main,.thc-stage,.thc-panel', ST=stappen();
   if(stap>ST.length-1) stap=ST.length-1;
   if(klaar){
-    root.innerHTML='<div class="thc-done" tabindex="-1"><div class="thc-done-in">'+(INSTELLINGEN.verzenden?'':'<div class="thc-test"><b>Testmodus:</b> deze aanvraag is niet echt verstuurd.</div>')+
+    root.innerHTML='<div class="thc-done" tabindex="-1"><div class="thc-done-in">'+(INSTELLINGEN.verzenden?'':'<div class="thc-test">'+(DEMO?'<b>Demo:</b> in het echt komt deze aanvraag nu bij de klantenservice binnen.':'<b>Testmodus:</b> deze aanvraag is niet echt verstuurd.')+'</div>')+
       '<div class="thc-vink" aria-hidden="true">✓</div><h2>Bedankt'+(S.voornaam?', '+e(S.voornaam):'')+'! Je aanvraag is verstuurd.</h2>'+
       '<ol class="thc-next"><li><span>Een zwembadspecialist van Toppy bekijkt je samenstelling.</span></li>'+
       '<li><span>Je krijgt een persoonlijk voorstel op maat'+(S.email?' op <b>'+e(S.email)+'</b>':'')+'.</span></li>'+
@@ -550,8 +552,8 @@ function render(){
   var act=document.activeElement, actF=act&&root.contains(act)&&act.getAttribute('data-f'), pos=actF&&act.tagName!=='SELECT'?act.selectionStart:null;
   var oud=bovenaan?[]:[].map.call(root.querySelectorAll(sc),function(x){return x.scrollTop;}); bovenaan=false;
   var st=ST[stap], h='', p=indicatie();
-  if(!INSTELLINGEN.verzenden) h+='<div class="thc-test"><b>Testmodus:</b> aanvragen worden nog niet verstuurd.</div>';
-  h+='<nav class="thc-steps" aria-label="Stappen">'+ST.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
+  if(!INSTELLINGEN.verzenden) h+='<div class="thc-test">'+(DEMO?'<b>Demo:</b> dit is een voorbeeld, er wordt niets verstuurd.':'<b>Testmodus:</b> aanvragen worden nog niet verstuurd.')+'</div>';
+  h+='<nav class="thc-steps" aria-label="Stappen">'+ST.map(function(s,i){var c=i===stap?'is-now':i<=verst?'is-done':'';return '<button type="button" class="thc-step '+c+'" data-ga="'+i+'"'+(i>verst?' disabled':'')+(i===stap?' aria-current="step"':'')+'><i>'+(i!==stap&&i<=verst?'✓':i+1)+'</i><span>'+s.kort+'</span></button>';}).join('')+(APP&&!DEMO?'<button type="button" class="thc-x" data-a="sluiten" aria-label="Sluiten">×</button>':'')+'</nav>';
   h+='<div class="thc-main">'+podium()+'<section class="thc-panel"><h2>'+st.titel+'</h2><p class="thc-lead">'+st.lead+'</p>'+inhoud(st.id)+'</section></div>';
   // alleen tonen wat de bezoeker zelf koos of al bevestigde (stap voorbij), niet de standaardwaarden
   var ids=stappen().map(function(s){return s.id;}), ok=function(k,id){ return aangeklikt[k]||verst>ids.indexOf(id); };
