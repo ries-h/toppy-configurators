@@ -265,6 +265,7 @@ var INSTELLINGEN = {
     aan: true,
     naam: "Black Friday",
     badge: "-10%",
+    procent: 10,          // korting in %: de prijsindicatie rekent hiermee (exact), de lijst hieronder is de afgeronde prijs die de klant ziet
     prijzen: { "Standaard": 44.96, "Tube": 57.60, "Extra Top": 67.46 }
   },
   vast: 150,            // "Productie- en verzendkosten" per bestelling
@@ -387,14 +388,18 @@ function m2(){
 }
 function bf(){ var a=INSTELLINGEN.actie; return !!(a&&a.aan&&a.prijzen); }
 function normPm(u){ u=u||S.uitvoering; return INSTELLINGEN.prijzen[u]||INSTELLINGEN.prijzen.Standaard; }
-function pm(u){ u=u||S.uitvoering; var a=bf()&&INSTELLINGEN.actie.prijzen[u]; return a&&a<normPm(u)?a:normPm(u); }
+function pm(u){ u=u||S.uitvoering; if(!bf()) return normPm(u); var a=INSTELLINGEN.actie;
+  // rekenen met precies het kortingspercentage; zonder procent met de actieprijs uit de lijst
+  var x=a.procent?normPm(u)*(1-a.procent/100):a.prijzen[u]; return x&&x<normPm(u)?x:normPm(u); }
+// tonen: de afgeronde actieprijs uit de lijst (bijv. 44,96), rekenen gebeurt met pm()
+function toon(u){ u=u||S.uitvoering; var a=bf()&&INSTELLINGEN.actie.prijzen[u]; return a&&pm(u)<normPm(u)?a:pm(u); }
 function prijsPm(){ return pm(S.uitvoering); }
 function korting(){ var p=indicatie(), n=indicatie(true); return p===null?0:Math.round(n)-Math.round(p); }
 function was(n,dec){ return '<s class="thc-was">'+eur(n,dec)+'</s>'; }
 // prijsblok in de kop en voetbalk: vanaf-prijs per m² of de indicatie, met doorgestreepte normale prijs
 function prijsKop(){
   var p=indicatie(), k=bf()&&prijsPm()<normPm();
-  if(p===null) return (k?'<span class="thc-bflab">'+e(INSTELLINGEN.actie.naam)+'</span> vanaf'+was(normPm(),true):'vanaf')+'<b>'+eur(prijsPm(),true)+' p/m²</b>';
+  if(p===null) return (k?'<span class="thc-bflab">'+e(INSTELLINGEN.actie.naam)+'</span> vanaf'+was(normPm(),true):'vanaf')+'<b>'+eur(toon(),true)+' p/m²</b>';
   return (k?'<span class="thc-bflab">'+e(INSTELLINGEN.actie.naam)+'</span>'+was(Math.round(indicatie(true))):'indicatie')+'<b>'+eur(Math.round(p))+'</b>';
 }
 function indicatie(norm){
@@ -445,7 +450,7 @@ function kaart(u){
   var f=img(u);
   var k=bf()&&pm(u)<normPm(u);
   return '<button type="button" class="thc-card" aria-pressed="'+(S.uitvoering===u)+'" data-k="uitvoering" data-v="'+e(u)+'"><span class="thc-cimg">'+(f?'<img src="'+e(f)+'" alt="" loading="lazy" decoding="async" data-src="'+e(f)+'">':'')+(k&&INSTELLINGEN.actie.badge?'<span class="thc-bfp">'+e(INSTELLINGEN.actie.badge)+'</span>':'')+lab(u,'thc-clab')+'</span>'+
-    '<span class="thc-cb"><b>'+e(u)+'</b><small>'+e(txt(u))+'</small><span class="thc-p"><i>'+(k?e(INSTELLINGEN.actie.naam):'vanaf')+'</i>'+(k?was(normPm(u),true)+'<span class="thc-nu">'+eur(pm(u),true)+'<em>per m²</em></span>':eur(pm(u),true)+'<em>per m²</em>')+'</span></span></button>';
+    '<span class="thc-cb"><b>'+e(u)+'</b><small>'+e(txt(u))+'</small><span class="thc-p"><i>'+(k?e(INSTELLINGEN.actie.naam):'vanaf')+'</i>'+(k?was(normPm(u),true)+'<span class="thc-nu">'+eur(toon(u),true)+'<em>per m²</em></span>':eur(toon(u),true)+'<em>per m²</em>')+'</span></span></button>';
 }
 function gekozen(){
   var r=[];
@@ -477,7 +482,7 @@ function blokken(){
   var m=m2(), p=indicatie(), k=bf()&&prijsPm()<normPm(), kt=korting();
   var pr=[['Totaal',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw']];
   if(k&&kt>0) pr.push([INSTELLINGEN.actie.naam,'Je bespaart '+eur(kt)+' (normaal '+eur(Math.round(indicatie(true)))+')']);
-  return [[0,'Afdekking',[['Uitvoering',S.uitvoering+' · '+eur(prijsPm(),true)+' per m²'+(k?' ('+INSTELLINGEN.actie.naam+', normaal '+eur(normPm(),true)+')':'')],['Kleur',S.kleur],['Oprollen',S.oproller]]],
+  return [[0,'Afdekking',[['Uitvoering',S.uitvoering+' · '+eur(toon(),true)+' per m²'+(k?' ('+INSTELLINGEN.actie.naam+', normaal '+eur(normPm(),true)+')':'')],['Kleur',S.kleur],['Oprollen',S.oproller]]],
           [1,'Zwembad',[['Vorm',S.vorm],['Binnenmaat',maatTekst()],['Oppervlakte',m===null?'Volgt in je voorstel':opp()]]],
           [0,'Prijsindicatie',pr]];
 }
@@ -568,7 +573,7 @@ function velden(){
   v['event_id']=nu+'_'+FORM_ID+'_'+Math.random().toString(36).slice(2,9);
   var naam=[S.voornaam,S.achternaam].filter(Boolean).join(' ');
   var sam=['KLANT','Naam: '+(naam||'-'),'E-mail: '+(S.email||'-'),'Telefoon: '+(S.tel||'-'),'Postcode en plaats: '+([S.postcode,S.plaats].filter(Boolean).join(' ')||'-'),'',
-    'SAMENSTELLING VIA CONFIGURATOR','Uitvoering: '+S.uitvoering+' ('+eur(prijsPm(),true)+' per m²'+(bf()&&prijsPm()<normPm()?', '+INSTELLINGEN.actie.naam.toUpperCase()+'-PRIJS, normaal '+eur(normPm(),true):'')+')','Vorm: '+S.vorm,'Binnenmaat: '+maatTekst(),
+    'SAMENSTELLING VIA CONFIGURATOR','Uitvoering: '+S.uitvoering+' ('+eur(toon(),true)+' per m²'+(bf()&&prijsPm()<normPm()?', '+INSTELLINGEN.actie.naam.toUpperCase()+'-PRIJS, normaal '+eur(normPm(),true):'')+')','Vorm: '+S.vorm,'Binnenmaat: '+maatTekst(),
     'Oppervlakte incl. overspan: '+(m===null?'onbekend':opp()),'Kleur: '+S.kleur,'Oprollen: '+S.oproller,
     'Prijsindicatie: '+(p===null?'n.v.t.':eur(Math.round(p))+' incl. btw en € '+INSTELLINGEN.vast+' productie- en verzendkosten'+(korting()>0?' ('+INSTELLINGEN.actie.naam+'-korting '+eur(korting())+', normaal '+eur(Math.round(indicatie(true)))+')':''))];
   v['q18_samenstellingConfigurator']=sam.concat(['','HERKOMST',herkomstTekst()]).join('\n');
@@ -580,7 +585,7 @@ function velden(){
   // Losse verborgen velden (2026-10-26), zodat het Freshdesk-ticket per gegeven een vet label toont
   v['q21_telefoon']=S.tel;
   v['q22_postcodeEn']=[S.postcode,S.plaats].filter(Boolean).join(' ');
-  v['q23_uitvoering']=S.uitvoering+' ('+eur(prijsPm(),true)+' per m²'+(bf()&&prijsPm()<normPm()?', '+INSTELLINGEN.actie.naam.toUpperCase()+'-PRIJS, normaal '+eur(normPm(),true):'')+')';
+  v['q23_uitvoering']=S.uitvoering+' ('+eur(toon(),true)+' per m²'+(bf()&&prijsPm()<normPm()?', '+INSTELLINGEN.actie.naam.toUpperCase()+'-PRIJS, normaal '+eur(normPm(),true):'')+')';
   v['q24_vormZwembad']=S.vorm;
   v['q25_binnenmaat']=maatTekst();
   v['q26_oppervlakte']=m===null?'Onbekend':opp();
