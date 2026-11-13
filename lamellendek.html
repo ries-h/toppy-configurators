@@ -226,6 +226,30 @@
 }
 @media (max-width:600px){#toppy-lc.thc-app .thc-stage .thc-usp{display:none}}
 @media (prefers-reduced-motion:reduce){#toppy-lc .thc-row,#toppy-lc .thc-card{transition:none}}
+/* Black Friday */
+#toppy-lc .thc-bfp{position:absolute;top:8px;left:8px;background:var(--y);color:#111;font-family:var(--head);font-weight:800;font-size:15px;border-radius:var(--r);padding:3px 9px;box-shadow:0 2px 6px rgba(0,0,0,.25);line-height:1.3}
+#toppy-lc .thc-bfp~.thc-clab{top:36px}
+#toppy-lc s.thc-was{color:var(--mute);font-weight:400;text-decoration-thickness:1.5px;margin-right:6px;font-family:Poppins,Helvetica,Arial,sans-serif}
+#toppy-lc .thc-card .thc-p s.thc-was{font-size:13px;margin-right:0}
+#toppy-lc .thc-card .thc-p i+s.thc-was{margin-right:4px}
+#toppy-lc .thc-card .thc-p .thc-nu{color:#111;display:block;white-space:nowrap;font-size:19px}
+#toppy-lc .thc-prijs s.thc-was,#toppy-lc .thc-vanaf s.thc-was{display:inline;font-size:13px;margin:0 0 0 5px}
+#toppy-lc .thc-bespaar{display:inline-block;background:#111;color:var(--y);font-weight:700;font-size:12px;border-radius:3px;padding:1px 7px;margin-left:6px;white-space:nowrap}
+#toppy-lc .thc-calc .thc-bespaar{flex-basis:auto}
+#toppy-lc .thc-prijs .thc-bflab{color:#111;font-weight:700}
+/* losse link (geen iframe): venster midden boven over een gedimde pagina, zoals de pop-up */
+html.thc-los,html.thc-los body{background:rgba(30,36,38,.6);min-height:100%}
+html.thc-los body{padding:24px;box-sizing:border-box}
+html.thc-los #toppy-lc.thc-app{width:min(1080px,100%);height:min(860px,calc(100vh - 48px));height:min(860px,calc(100dvh - 48px));margin:0 auto;background:#fff;border-radius:.625rem;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@media (max-width:600px){html.thc-los body{padding:0}html.thc-los #toppy-lc.thc-app{height:100vh;height:100dvh;border-radius:0}}
+/* losse link (geen iframe): venster midden boven over een gedimde pagina, zoals de pop-up */
+html.thc-los,html.thc-los body{background:rgba(30,36,38,.6);min-height:100%}
+html.thc-los body{padding:24px;box-sizing:border-box}
+html.thc-los #toppy-lc.thc-app{width:min(1080px,100%);height:min(860px,calc(100vh - 48px));height:min(860px,calc(100dvh - 48px));margin:0 auto;background:#fff;border-radius:.625rem;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@media (max-width:600px){html.thc-los body{padding:0}html.thc-los #toppy-lc.thc-app{height:100vh;height:100dvh;border-radius:0}}
+#toppy-lc .thc-bfp~.thc-tag{top:38px}
+#toppy-lc .thc-rp s.thc-was{display:block;font-size:12px;margin:0}
+#toppy-lc .thc-calc .thc-was{margin-left:4px}
 /* losse link (geen iframe): venster midden boven over een gedimde pagina, zoals de pop-up */
 html.thc-los,html.thc-los body{background:rgba(30,36,38,.6);min-height:100%}
 html.thc-los body{padding:24px;box-sizing:border-box}
@@ -258,6 +282,18 @@ var INSTELLINGEN = {
   // AQS: prijs van de productpagina (toppy.nl/product/22812, Ries 2026-10-27), niet die van het oude formulier.
   oprollers: { "Open Manu": 1495, "Open Classic": 2645, "AQS Automatisch oprolsysteem": 3295, "Tixit": 2995, "Open Aero": 3105,
     "Contura": 3395, "Open Banc Classic": 4995, "Open Banc Classic Houtkleur": 5599, "Banc Design": 6995 },
+  // Black Friday (2026-11-13): alleen Solar polycarbonaat. Solar was al € 40 afgeprijsd (€ 159,95 naar
+  // € 119,95); met Black Friday gaat er nog € 10 af en communiceren we "€ 50 korting per m²" ten opzichte
+  // van de oude prijs. Per kleur: was = oude prijs (doorgestreept), prijzen = Black Friday-prijs.
+  // aan: false = gewone prijzen uit "lamellen" hierboven, geen kortingslabels.
+  actie: {
+    aan: true,
+    naam: "Black Friday",
+    type: "Solar polycarbonaat",
+    badge: "€ 50 korting p/m²",
+    was:     { "Blauw": 159.95, "Transparant": 159.95, "Zilver": 169.95, "Graphite": 179.95, "Gold": 179.95 },
+    prijzen: { "Blauw": 109.95, "Transparant": 109.95, "Zilver": 119.95, "Graphite": 129.95, "Gold": 129.95 }
+  },
   installatie: 400,     // "Inclusief installatie - vanaf € 400". Inmeten is altijd gratis (Ries, 2026-10-27).
   afvoeren: 150,        // "+ Afvoeren oude lamellen - vanaf € 150"
   // Foto's staan in de map lamellendek/ van deze repo: sfeerfoto's van de lamellenpagina (DAM/CMS),
@@ -355,8 +391,16 @@ function lab(v){ var l=(INSTELLINGEN.labels||{})[v]; if(!l||!l.tekst) return '';
 function T(){ return INSTELLINGEN.lamellen[S.type]||null; }
 function nieuw(){ return S.situatie==='Compleet lamellendek'; }
 function kleuren(){ var t=T(); return t?Object.keys(t.kleuren):[]; }
-function vanafType(t){ var k=INSTELLINGEN.lamellen[t].kleuren; return Math.min.apply(null,Object.keys(k).map(function(x){return k[x];})); }
-function pm2(){ var t=T(); if(!t) return null; return t.kleuren[S.kleur]!=null?t.kleuren[S.kleur]:vanafType(S.type); }
+// Black Friday: actie(t) = actie geldt voor dit type; kp(t,k) = prijs per m² van een kleur (actieprijs als die er is)
+function actie(t){ var a=INSTELLINGEN.actie; return !!(a&&a.aan&&a.type===t&&a.prijzen); }
+function kp(t,k,norm){ var a=INSTELLINGEN.actie, n=INSTELLINGEN.lamellen[t].kleuren[k]; if(norm||!actie(t)||a.prijzen[k]==null) return n; return Math.min(n,a.prijzen[k]); }
+function kpWas(t,k){ var a=INSTELLINGEN.actie; return actie(t)&&a.was&&a.was[k]!=null?a.was[k]:null; }
+function vanafType(t,norm){ var k=INSTELLINGEN.lamellen[t].kleuren; return Math.min.apply(null,Object.keys(k).map(function(x){return kp(t,x,norm);})); }
+function vanafWas(t){ var k=INSTELLINGEN.lamellen[t].kleuren; return Math.min.apply(null,Object.keys(k).map(function(x){var w=kpWas(t,x); return w==null?kp(t,x,true):w;})); }
+function pm2(norm){ var t=T(); if(!t) return null; return t.kleuren[S.kleur]!=null?kp(S.type,S.kleur,norm):vanafType(S.type,norm); }
+// doorgestreepte "was"-prijs per m² voor de huidige keuze (de oude prijs), of null zonder actie
+function pm2Was(){ var t=T(); if(!t||!actie(S.type)) return null; return t.kleuren[S.kleur]!=null?kpWas(S.type,S.kleur):vanafWas(S.type); }
+function was(n,dec){ return '<s class="thc-was">'+eur(n,dec)+'</s>'; }
 function vanafAlles(){ return Math.min.apply(null,TYPES.map(vanafType)); }
 
 /* ---------- rekenen ---------- */
@@ -368,8 +412,10 @@ function installatiePrijs(){ return (S.installatie==='partner'?INSTELLINGEN.inst
 // buismotor of advies: geen vanaf-prijs bekend (het oude formulier had er geen), dus niet als € 0 tellen
 function oprollerOnbekend(){ return nieuw()&&(S.systeem!=='Bovengronds systeem'||!INSTELLINGEN.oprollers[S.oproller]); }
 function excl(){ return oprollerOnbekend()?', excl. oproller':''; }
-function lamelPrijs(){ var m=m2(), p=pm2(); return m===null||p===null?null:m*p; }
-function indicatie(){ var l=lamelPrijs(); return l===null?null:l+oprollerPrijs()+installatiePrijs(); }
+function lamelPrijs(norm){ var m=m2(), p=pm2(norm); return m===null||p===null?null:m*p; }
+function indicatie(norm){ var l=lamelPrijs(norm); return l===null?null:l+oprollerPrijs()+installatiePrijs(); }
+// korting in euro's zoals we hem communiceren: oude prijs min Black Friday-prijs, over de oppervlakte
+function korting(){ var m=m2(), w=pm2Was(), p=pm2(); return m===null||w===null||p===null?0:Math.round(m*w)-Math.round(m*p); }
 
 /* ---------- vormtekeningen (bovenaanzicht met lamellen en maatlijnen L/B) ---------- */
 var SVGN=0;
@@ -412,18 +458,18 @@ function rij(k,v,opt){
   return '<button type="button" class="thc-row'+(opt.adv?' thc-adv':'')+(opt.check?' thc-check':'')+(zonder?' thc-zonder':'')+'" aria-pressed="'+aan+'" data-k="'+k+'" data-v="'+e(v)+'"'+(opt.check?' data-check="1"':'')+'>'+
     (zonder?'':'<span class="thc-thumb'+(opt.foto?' thc-foto':'')+'">'+th+'</span>')+
     '<span><b>'+e(opt.naam||v)+(opt.label||'')+'</b>'+(opt.sub?'<small>'+e(opt.sub)+'</small>':'')+'</span>'+
-    '<span class="thc-rp">'+(opt.prijs?'<i>'+e(opt.prijs[1])+'</i>'+e(opt.prijs[0]):'')+'</span><span class="thc-dot"></span></button>';
+    '<span class="thc-rp">'+(opt.prijs?'<i>'+e(opt.prijs[1])+'</i>'+(opt.prijs[2]?was(opt.prijs[2],true):'')+e(opt.prijs[0]):'')+'</span><span class="thc-dot"></span></button>';
 }
 function kaart(k,v,body){
-  var f=img(v);
-  return '<button type="button" class="thc-card" aria-pressed="'+(S[k]===v)+'" data-k="'+k+'" data-v="'+e(v)+'"><span class="thc-cimg">'+(f?'<img src="'+e(f)+'" alt="" loading="lazy" decoding="async" data-src="'+e(f)+'">':'')+lab(v)+'</span>'+
+  var f=img(v), bfb=k==='type'&&actie(v)&&INSTELLINGEN.actie.badge?'<span class="thc-bfp">'+e(INSTELLINGEN.actie.badge)+'</span>':'';
+  return '<button type="button" class="thc-card" aria-pressed="'+(S[k]===v)+'" data-k="'+k+'" data-v="'+e(v)+'"><span class="thc-cimg">'+(f?'<img src="'+e(f)+'" alt="" loading="lazy" decoding="async" data-src="'+e(f)+'">':'')+bfb+lab(v)+'</span>'+
     '<span class="thc-cb">'+body+'</span></button>';
 }
 function typeKaart(t){
   var d=INSTELLINGEN.lamellen[t];
   return kaart('type',t,'<b>'+e(t)+'</b><small>'+e(d.tekst)+'</small>'+
     '<ul class="thc-feit"><li>Levensduur '+e(d.levensduur)+'</li><li>'+e(d.garantie)+' garantie</li></ul>'+
-    '<span class="thc-p"><i>vanaf</i>'+eur(vanafType(t),true)+'<em>per m²</em></span>');
+    (actie(t)?'<span class="thc-p"><i>'+e(INSTELLINGEN.actie.naam)+' vanaf</i>'+was(vanafWas(t),true)+'<span class="thc-nu">'+eur(vanafType(t),true)+'<em>per m²</em></span></span>':'<span class="thc-p"><i>vanaf</i>'+eur(vanafType(t),true)+'<em>per m²</em></span>'));
 }
 function stapId(){ return stappen()[stap].id; }
 function gekozen(){
@@ -460,7 +506,7 @@ function maatTekst(){ return maatOk()?'Lengte '+getal(S.lengte)+' cm (incl. trap
 function oprolTekst(){ if(!nieuw()) return 'Bestaande oproller'+(S.merk?' ('+S.merk+')':''); if(S.systeem!=='Bovengronds systeem') return S.systeem+' (prijs volgt in je voorstel)'; return S.systeem+': '+S.oproller+(INSTELLINGEN.oprollers[S.oproller]?' (vanaf '+eur(INSTELLINGEN.oprollers[S.oproller])+')':''); }
 function instTekst(){ var r=[S.installatie==='partner'?'Inclusief installatie (vanaf '+eur(INSTELLINGEN.installatie)+')':'Zelf installeren, met hulp op afstand'];
   r.push('gratis inmeten'); if(S.afvoeren&&!nieuw()) r.push('afvoeren oude lamellen (vanaf '+eur(INSTELLINGEN.afvoeren)+')'); return r.join(' + '); }
-function lamelTekst(){ var p=pm2(); return S.type+', '+(S.kleur===ADVIES?'kleur nog niet gekozen':S.kleur)+(p!==null?' (vanaf '+eur(p,true)+' per m²)':''); }
+function lamelTekst(){ var p=pm2(), w=pm2Was(); return S.type+', '+(S.kleur===ADVIES?'kleur nog niet gekozen':S.kleur)+(p!==null?' (vanaf '+eur(p,true)+' per m²'+(w!==null?', '+INSTELLINGEN.actie.naam+', normaal '+eur(w,true):'')+')':''); }
 function blokken(){
   var m=m2(), p=indicatie();
   return [['situatie','Situatie',[['Situatie',S.situatie+(nieuw()?'':', merk '+(S.merk||'onbekend'))]]],
@@ -468,7 +514,7 @@ function blokken(){
           ['zwembad','Zwembad',[['Vorm',S.vorm],['Binnenmaat',maatTekst()],['Oppervlakte',m===null?'Volgt in je voorstel':m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²']]],
           [nieuw()?'oprollen':'situatie','Oprollen',[['Oproller',oprolTekst()]]],
           ['installatie','Installatie',[['Installatie',instTekst()]]],
-          ['','Prijsindicatie',[['Vanaf',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw'+excl()]]]];
+          ['','Prijsindicatie',[['Vanaf',p===null?'Volgt in je voorstel':eur(Math.round(p))+' incl. btw'+excl()]].concat(p!==null&&korting()>0?[[INSTELLINGEN.actie.naam,'Je bespaart '+eur(korting())+' op de lamellen']]:[])]];
 }
 function overzicht(knop){
   var ids=stappen().map(function(s){return s.id;});
@@ -486,7 +532,7 @@ function maatVelden(){
   h+=veld('breedte','Breedte (B)','text','off','bijv. 400',' inputmode="numeric" data-maat="1"');
   h+='</div><p class="thc-hint">Hele centimeters, dus 8 meter is 800.</p>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'');
   h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
-     '<span>Oppervlakte <b>'+m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(lp===null?'':'<span>Lamellen vanaf <b>'+eur(Math.round(lp))+'</b></span><small>'+e(lamelTekst())+', incl. btw, zonder oproller en installatie</small>'))+'</div>';
+     '<span>Oppervlakte <b>'+m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(lp===null?'':'<span>Lamellen vanaf '+(korting()>0?was(Math.round(m2()*pm2Was())):'')+' <b>'+eur(Math.round(lp))+'</b>'+(korting()>0?'<span class="thc-bespaar">Je bespaart '+eur(korting())+'</span>':'')+'</span><small>'+e(lamelTekst())+', incl. btw, zonder oproller en installatie</small>'))+'</div>';
   return h+'</fieldset>';
 }
 function formulier(){
@@ -509,7 +555,7 @@ function inhoud(id){
   if(id==='lamellen') h+='<div class="thc-cards">'+TYPES.map(typeKaart).join('')+'</div>';
   if(id==='kleur'){
     var t=T();
-    h+='<fieldset class="thc-q"><legend>'+e(S.type)+'</legend><div class="thc-list">'+kleuren().map(function(k){return rij('kleur',k,{beeld:S.type+'|'+k,label:lab(S.type+'|'+k),prijs:[eur(t.kleuren[k],true),'vanaf per m²']});}).join('')+
+    h+='<fieldset class="thc-q"><legend>'+e(S.type)+'</legend><div class="thc-list">'+kleuren().map(function(k){return rij('kleur',k,{beeld:S.type+'|'+k,label:lab(S.type+'|'+k),prijs:[eur(kp(S.type,k),true),kpWas(S.type,k)!=null?INSTELLINGEN.actie.naam:'vanaf per m²',kpWas(S.type,k)]});}).join('')+
       rij('kleur',ADVIES,{adv:true,sub:'Een specialist adviseert je, of bestel de sample kit'})+'</div></fieldset>';
     h+='<div class="thc-tip">Lamellen eerst zien en voelen? <a href="'+SAMPLE+'" target="_blank" rel="noopener">Bestel de sample kit</a> of kom langs in onze showroom in Spijk.</div>';
   }
@@ -560,7 +606,7 @@ function render(){
   var kz=[S.situatie==='Vervanglamellen'&&ok('situatie','situatie')?'Vervanglamellen':'',ok('type','lamellen')?S.type:'',S.kleur!==ADVIES&&ok('kleur','kleur')?S.kleur:'',m2()!==null?m2().toLocaleString('nl-NL',{maximumFractionDigits:1})+' m²':''].filter(Boolean).join(' · ')||'nog niets gekozen';
   h+='<div class="thc-foot">'+(stap>0?'<button type="button" class="thc-btn thc-back" data-a="terug">Vorige</button>':'')+
      (st.contact?'<div class="thc-keuze"><b>Gratis en vrijblijvend</b> · persoonlijk voorstel op maat</div>':'<div class="thc-keuze"><b>Jouw keuze:</b> '+e(kz)+'</div>')+
-     '<div class="thc-prijs">'+(p===null?'vanaf<b>'+eur(pm2()||vanafAlles(),true)+' p/m²</b>':(oprollerOnbekend()?'vanaf, excl. oproller':'indicatie vanaf')+'<b>'+eur(Math.round(p))+'</b>')+'</div>'+
+     '<div class="thc-prijs">'+(p===null?(pm2Was()!==null?'<span class="thc-bflab">'+e(INSTELLINGEN.actie.naam)+'</span> vanaf'+was(pm2Was(),true):'vanaf')+'<b>'+eur(pm2()||vanafAlles(),true)+' p/m²</b>':(korting()>0?'<span class="thc-bflab">'+e(INSTELLINGEN.actie.naam)+'</span> ':'')+(oprollerOnbekend()?'vanaf, excl. oproller':'indicatie vanaf')+'<b>'+eur(Math.round(p))+'</b>')+'</div>'+
      '<button type="button" class="thc-btn thc-go" data-a="verder"'+(bezig?' disabled':'')+'>'+(st.contact?(bezig?'Bezig met versturen…':'Vraag gratis voorstel aan'):'Volgende<span class="thc-wat">: '+ST[stap+1].kort+'</span>')+'</button></div>';
   root.innerHTML=h;
   [].forEach.call(root.querySelectorAll(sc),function(x,i){ if(oud[i]) x.scrollTop=oud[i]; });
@@ -590,13 +636,13 @@ function velden(){
     naam: naam, email: S.email, tel: S.tel, adres: adres, land: S.land,
     situatie: nieuw()?'Compleet lamellendek (nieuwe situatie)':'Vervanglamellen (bestaande situatie)',
     merk: nieuw()?'':(S.merk||'Onbekend'),
-    lamellen: S.type+(pm!==null?' (vanaf '+eur(pm,true)+' per m²)':''),
+    lamellen: S.type+(pm!==null?' (vanaf '+eur(pm,true)+' per m²'+(pm2Was()!==null?', '+INSTELLINGEN.actie.naam.toUpperCase()+'-PRIJS, normaal '+eur(pm2Was(),true):'')+')':''),
     kleur: S.kleur,
     vorm: S.vorm, maat: maatTekst(), opp: opp,
     systeem: nieuw()?S.systeem:'Bestaande oproller',
     oproller: oprolTekst(),
     installatie: instTekst(),
-    prijs: p===null?'Volgt in het voorstel':'vanaf '+eur(Math.round(p))+' incl. btw'+excl()
+    prijs: p===null?'Volgt in het voorstel':'vanaf '+eur(Math.round(p))+' incl. btw'+excl()+(korting()>0?' ('+INSTELLINGEN.actie.naam+'-korting '+eur(korting())+' op de lamellen)':'')
   };
   v['q20_naam']=r.naam; // Requester Name in Freshdesk
   v['q19_email']=r.email;
@@ -634,7 +680,7 @@ function verstuur(){
   document.body.appendChild(f);
   // echt=true: JotForm heeft geantwoord. Na 15 s zonder antwoord wel het bedankscherm, maar geen conversie.
   var af=function(echt){ if(klaar) return; bezig=false; klaar=true; render(); if(!echt) return;
-    if(window.dataLayer) window.dataLayer.push({event:'lamellen_configurator_aanvraag', uitvoering:S.type});
+    if(window.dataLayer) window.dataLayer.push({event:'lamellen_configurator_aanvraag', uitvoering:S.type, actie:actie(S.type)?INSTELLINGEN.actie.naam:''});
     meld('verzonden',{uitvoering:S.type, land:S.land});
     if(!IFRAME) setTimeout(function(){ location.href=bedankt(); },1500); };
   fr.onload=function(){ af(true); }; setTimeout(function(){ af(false); },15000);
