@@ -446,6 +446,8 @@ function vormSvg(v, maten){
          '<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="14" font-weight="700" fill="#343e40">'+L+'</text>';
     });
   }
+  if(maten) g+='<g font-family="Poppins,Arial,sans-serif" font-size="11" fill="#343e40"><rect x="8" y="4" width="12" height="12" rx="2" fill="#7fb7d8" stroke="#2f5670"/><text x="25" y="14">Meet de binnenkant van je zwembad (L, B)</text>'+
+    '<text x="8" y="32" fill="#5f6768">Lamellen liggen in het water, dus geen overspan.</text></g>';
   return '<svg viewBox="0 0 400 290" role="img" aria-label="Tekening '+e(v)+'" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
 }
 
@@ -527,10 +529,10 @@ function veld(id,label,type,ac,ph,extra){
   return '<div class="thc-field"><label for="tlc-'+id+'">'+label+'</label><input id="tlc-'+id+'" data-f="'+id+'" type="'+type+'" autocomplete="'+ac+'" placeholder="'+ph+'" value="'+e(S[id])+'"'+(extra||'')+'>'+(fout[id]?'<span class="thc-err">'+fout[id]+'</span>':'')+'</div>';
 }
 function maatVelden(){
-  var m=m2(), lp=lamelPrijs(), h='<fieldset class="thc-q"><legend>Binnenmaat in cm</legend><div class="thc-maten">';
-  h+=veld('lengte','Lengte (L) <small>incl. trap</small>','text','off','bijv. 800',' inputmode="numeric" data-maat="1"');
-  h+=veld('breedte','Breedte (B)','text','off','bijv. 400',' inputmode="numeric" data-maat="1"');
-  h+='</div><p class="thc-hint">Hele centimeters, dus 8 meter is 800.</p>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'');
+  var m=m2(), lp=lamelPrijs(), h='<fieldset class="thc-q"><legend>Binnenmaat van je zwembad in cm</legend><div class="thc-maten">';
+  h+=veld('lengte','Lengte zwembad (L) <small>incl. trap</small>','text','off','bijv. 800',' inputmode="numeric" data-maat="1"');
+  h+=veld('breedte','Breedte zwembad (B)','text','off','bijv. 400',' inputmode="numeric" data-maat="1"');
+  h+='</div><p class="thc-hint"><b>Meet de binnenkant van je zwembad, van binnenrand tot binnenrand.</b> Het lamellendek ligt in het bad, dus je telt er niets bij op. Hele centimeters, dus 8 meter is 800.</p>'+(fout.maat?'<p class="thc-err">'+fout.maat+'</p>':'');
   h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
      '<span>Oppervlakte <b>'+m.toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(lp===null?'':'<span>Lamellen vanaf '+(korting()>0?was(Math.round(m2()*pm2Was())):'')+' <b>'+eur(Math.round(lp))+'</b>'+(korting()>0?'<span class="thc-bespaar">Je bespaart '+eur(korting())+'</span>':'')+'</span><small>'+e(lamelTekst())+', incl. btw, zonder oproller en installatie</small>'))+'</div>';
   return h+'</fieldset>';

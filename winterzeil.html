@@ -224,6 +224,12 @@
 }
 @media (max-width:600px){#toppy-sc.thc-app .thc-stage .thc-usp{display:none}}
 @media (prefers-reduced-motion:reduce){#toppy-sc .thc-row,#toppy-sc .thc-card{transition:none}}
+#toppy-sc .thc-afm{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:4px 12px;align-items:center;border:2px solid var(--y);background:#fffbea;border-radius:var(--r);padding:10px 14px;margin:4px 0 10px}
+#toppy-sc .thc-afm i{display:block;font-style:normal;font-size:12px;color:var(--ink2)}
+#toppy-sc .thc-afm b{font-family:var(--head);font-size:17px;font-weight:800;white-space:nowrap}
+#toppy-sc .thc-afm>span{font-size:22px;font-weight:700;color:var(--ink2)}
+#toppy-sc .thc-afm small{grid-column:1/-1;font-size:12px;color:var(--ink2);line-height:1.4}
+@media (max-width:420px){#toppy-sc .thc-afm b{font-size:15px}}
 /* Black Friday */
 #toppy-sc .thc-bfp{position:absolute;top:8px;left:8px;background:var(--y);color:#111;font-family:var(--head);font-weight:800;font-size:15px;border-radius:var(--r);padding:3px 9px;box-shadow:0 2px 6px rgba(0,0,0,.25);line-height:1.3}
 #toppy-sc .thc-bfp~.thc-clab{top:36px}
@@ -337,8 +343,8 @@ var BEVESTIGING = ['Standaard P-haring','Intrekbare grondankers'];
 var NIET_DELUXE = {'Beige / Beige':1, 'Standaard P-haring':1};
 // label per maat: [veld, label]; C alleen bij een trap. [CHECK: A/B/C bij de trapvormen met de productmanager]
 function maatLabels(z, vorm){
-  if(z===1) return [['a', vorm==='Rond'?'Diameter (A)':'Breedte (A)']];
-  if(z===2) return [['a','Lengte (A)'],['b','Breedte (B)']];
+  if(z===1) return [['a', vorm==='Rond'?'Diameter zwembad (A)':'Breedte zwembad (A)']];
+  if(z===2) return [['a','Lengte zwembad (A)'],['b','Breedte zwembad (B)']];
   return [['a','Breedte zwembad (A)'],['b','Lengte zonder trap (B)'],['c','Diepte trap (C)']];
 }
 
@@ -440,6 +446,7 @@ function vormSvg(v, maten){
   }[v];
   if(!sh) return '';
   var id='twc-c'+(++SVGN), g='<defs><clipPath id="'+id+'"><path d="'+sh.d+'"/></clipPath></defs>';
+  if(maten) g+='<path d="'+sh.d+'" fill="#fff3c4" stroke="#ffcb01" stroke-width="28" stroke-linejoin="round" stroke-opacity=".55"/>';
   g+='<path d="'+sh.d+'" fill="#4a5457"/>';
   g+='<g clip-path="url(#'+id+')">';
   /* zeil met elastieken langs de rand */
@@ -451,6 +458,8 @@ function vormSvg(v, maten){
     g+='<path d="'+ln+'" stroke="#343e40" stroke-width="2" fill="none"/><circle cx="'+cx+'" cy="'+cy+'" r="13" fill="#ffcb01" stroke="#343e40" stroke-width="2"/>'+
        '<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="15" font-weight="700" fill="#343e40">'+L+'</text>';
   });
+  if(maten) g+='<g font-family="Poppins,Arial,sans-serif" font-size="11" fill="#343e40"><rect x="8" y="4" width="12" height="12" rx="2" fill="#4a5457"/><text x="25" y="14">Zwembad: hier meet je</text>'+
+    '<rect x="200" y="4" width="12" height="12" rx="2" fill="#ffcb01" fill-opacity=".7"/><text x="217" y="14">Overspan 30 cm: rekenen wij erbij</text></g>';
   return '<svg viewBox="0 0 420 280" role="img" aria-label="Tekening '+e(v)+'" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
 }
 
@@ -512,10 +521,22 @@ function overzicht(knop){
 function veld(id,label,type,ac,ph,extra){
   return '<div class="thc-field"><label for="twc-'+id+'">'+label+'</label><input id="twc-'+id+'" data-f="'+id+'" type="'+type+'" autocomplete="'+ac+'" placeholder="'+ph+'" value="'+e(S[id])+'"'+(extra||'')+'>'+(fout[id]?'<span class="thc-err">'+fout[id]+'</span>':'')+'</div>';
 }
+// zwembadmaat en zeilmaat (met overspan) naast elkaar, zelfde rekenwijze als m2()
+function mt(x){ return (x).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function afmetingen(){
+  if(!maatOk()||vorm().geenPrijs) return '';
+  var z=vorm().zijden, a=getal(S.a)/100, b=(getal(S.b)||0)/100, c=(getal(S.c)||0)/100, zw, af;
+  if(z===1){ zw=mt(a)+' m'+(S.vorm==='Rond'?' doorsnede':''); af=mt(a+0.6)+' m'+(S.vorm==='Rond'?' doorsnede':''); }
+  else if(z===2){ zw=mt(a)+' x '+mt(b)+' m'; af=mt(a+0.6)+' x '+mt(b+0.6)+' m'; }
+  else { zw=mt(a)+' x '+mt(b+c)+' m (met trap)'; af=mt(a+1.2)+' x '+mt(b+c+0.6)+' m'; }
+  return '<div class="thc-afm"><div><i>Je zwembad</i><b>'+zw+'</b></div><span aria-hidden="true">→</span><div><i>Je zeil wordt</i><b>'+af+'</b></div>'+
+    '<small>Inclusief 30 cm overspan per zijde. Klopt de maat van je zeil niet met je oude zeil? Dan heb je waarschijnlijk de maat van het oude zeil ingevuld in plaats van de binnenmaat.</small></div>';
+}
 function maatVelden(){
-  var z=vorm().zijden, l=maatLabels(z,S.vorm), m=m2(), p=indicatie(), h='<fieldset class="thc-q"><legend>Binnenmaat in cm</legend><div class="thc-maten">';
+  var z=vorm().zijden, l=maatLabels(z,S.vorm), m=m2(), p=indicatie(), h='<fieldset class="thc-q"><legend>Binnenmaat van je zwembad in cm</legend><div class="thc-maten">';
   l.forEach(function(x){ h+=veld(x[0],x[1],'text','off','bijv. '+(x[0]==='c'?'120':x[0]==='a'?'800':'400'),' inputmode="numeric" data-maat="1"'); });
-  h+='</div><p class="thc-hint">Hele centimeters, dus 5 meter is 500. Minimaal 20 m² inclusief overspan.</p>';
+  h+='</div><p class="thc-hint"><b>Meet van binnenrand tot binnenrand, zonder overspan.</b> De 30 cm overspan per zijde tellen wij er zelf bij. Hele centimeters, dus 5 meter is 500. Minimaal 20 m² inclusief overspan.</p>';
+  h+=afmetingen();
   h+='<div class="thc-calc" aria-live="polite">'+(m===null?'<span>Vul je maten in, dan rekenen we de oppervlakte uit.</span>':
      '<span>Oppervlakte incl. overspan <b>'+m2echt().toLocaleString('nl-NL',{maximumFractionDigits:2})+' m²</b></span>'+(m2echt()<20?'<small>Kleiner dan 20 m²: we rekenen met het minimum van 20 m².</small>':'')+(p===null?'':'<span>Prijsindicatie '+(korting()>0?was(Math.round(indicatie(true))):'')+'<b>'+eur(Math.round(p))+'</b>'+(korting()>0?'<span class="thc-bespaar">Je bespaart '+eur(korting())+'</span>':'')+'</span><small>'+e(S.uitvoering)+(ankerPm()?' met grondankers':'')+', incl. btw en € '+INSTELLINGEN.vast+' productiekosten</small>'))+'</div>';
   if(S.vorm==='Houten zwembad') h+='<div class="thc-tip">Bekijk ook de <a href="'+HOUTEN+'" target="_blank" rel="noopener">winterzeilen voor houten zwembaden</a>.</div>';
