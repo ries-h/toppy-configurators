@@ -247,7 +247,9 @@ html.thc-los,html.thc-los body{background:rgba(30,36,38,.6);min-height:100%}
 html.thc-los body{padding:24px;box-sizing:border-box}
 html.thc-los #toppy-lc.thc-app{width:min(1080px,100%);height:min(860px,calc(100vh - 48px));height:min(860px,calc(100dvh - 48px));margin:0 auto;background:#fff;border-radius:.625rem;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 @media (max-width:600px){html.thc-los body{padding:0}html.thc-los #toppy-lc.thc-app{height:100vh;height:100dvh;border-radius:0}}
-#toppy-lc .thc-bfp~.thc-tag{top:38px}
+/* korting bovenaan, label eronder: gestapeld zodat ze nooit over elkaar vallen, ook als de korting over twee regels loopt */
+#toppy-lc .thc-labs{position:absolute;top:8px;left:8px;right:8px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;z-index:1}
+#toppy-lc .thc-labs .thc-bfp,#toppy-lc .thc-labs .thc-tag{position:static}
 #toppy-lc .thc-rp s.thc-was{display:block;font-size:12px;margin:0}
 #toppy-lc .thc-calc .thc-was{margin-left:4px}
 /* losse link (geen iframe): venster midden boven over een gedimde pagina, zoals de pop-up */
@@ -464,7 +466,7 @@ function rij(k,v,opt){
 }
 function kaart(k,v,body){
   var f=img(v), bfb=k==='type'&&actie(v)&&INSTELLINGEN.actie.badge?'<span class="thc-bfp">'+e(INSTELLINGEN.actie.badge)+'</span>':'';
-  return '<button type="button" class="thc-card" aria-pressed="'+(S[k]===v)+'" data-k="'+k+'" data-v="'+e(v)+'"><span class="thc-cimg">'+(f?'<img src="'+e(f)+'" alt="" loading="lazy" decoding="async" data-src="'+e(f)+'">':'')+bfb+lab(v)+'</span>'+
+  return '<button type="button" class="thc-card" aria-pressed="'+(S[k]===v)+'" data-k="'+k+'" data-v="'+e(v)+'"><span class="thc-cimg">'+(f?'<img src="'+e(f)+'" alt="" loading="lazy" decoding="async" data-src="'+e(f)+'">':'')+((bfb||lab(v))?'<span class="thc-labs">'+bfb+lab(v)+'</span>':'')+'</span>'+
     '<span class="thc-cb">'+body+'</span></button>';
 }
 function typeKaart(t){
